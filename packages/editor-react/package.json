@@ -13,5 +13,16 @@
   ],
   "author": "joseph0926",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@shadcn-mini/editor-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3"
+  }
 }

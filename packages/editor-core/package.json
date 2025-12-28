@@ -13,5 +13,12 @@
   ],
   "author": "joseph0926",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  }
 }
