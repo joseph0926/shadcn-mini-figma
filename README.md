@@ -17,24 +17,30 @@ shadcn-mini-figma is a web-based visual editor for building realistic UI prototy
 ## MVP scope
 
 **Included**
+
 - Add components from a palette to the canvas.
 - Select components on the canvas.
 - Move components to reposition them.
 
 **Not included (MVP)**
+
 - Resize, rotate, snapping, alignment guides.
 - Collaboration, version history, cloud storage.
 
 ## Status
 
-Pre-MVP. The project is in planning and design.
+Early development. Monorepo scaffolded and the web app is initialized.
 
-## Documentation
+## Repository structure
 
-- `docs/temp.tech.md`
-- `docs/temp.roadmap.md`
-- `docs/temp.plan.md`
-- `docs/rfcs/RFC-001-architecture-monorepo-mvp-scope.md`
+- `apps/web` — Next.js app (landing + editor)
+- `packages/editor-core` — framework-agnostic core (schema/state/commands)
+- `packages/editor-react` — React renderer
+
+## Tech stack (current)
+
+- Next.js 16 (App Router), React 19
+- pnpm workspaces + Turborepo
 
 ## License
 
