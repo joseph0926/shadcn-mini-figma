@@ -17,5 +17,8 @@
   ],
   "author": "joseph0926",
   "license": "MIT",
-  "packageManager": "pnpm@10.26.1"
+  "packageManager": "pnpm@10.26.1",
+  "dependencies": {
+    "turbo": "^2.7.2"
+  }
 }
