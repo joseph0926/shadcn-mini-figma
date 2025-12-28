@@ -27,10 +27,6 @@ shadcn-mini-figma is a web-based visual editor for building realistic UI prototy
 - Resize, rotate, snapping, alignment guides.
 - Collaboration, version history, cloud storage.
 
-## Status
-
-Early development. Monorepo scaffolded and the web app is initialized.
-
 ## Repository structure
 
 - `apps/web` — Next.js app (landing + editor)

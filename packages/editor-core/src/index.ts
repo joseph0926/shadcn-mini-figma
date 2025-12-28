@@ -15,3 +15,6 @@ export type {
   NodeBase,
   DocumentState,
 } from "./types";
+
+export { DEFAULT_SCHEMA_VERSION, createDocumentState, applyCommand } from "./state";
+export type { CreateDocumentOptions } from "./state";
