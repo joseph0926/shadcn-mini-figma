@@ -1,0 +1,17 @@
+{
+  "name": "@shadcn-mini/editor-react",
+  "version": "0.0.1",
+  "private": true,
+  "description": "React renderer for shadcn-mini-figma.",
+  "keywords": [
+    "shadcn-mini-figma",
+    "editor-react",
+    "renderer",
+    "react",
+    "drag-and-drop",
+    "dnd-kit"
+  ],
+  "author": "joseph0926",
+  "license": "MIT",
+  "type": "module"
+}

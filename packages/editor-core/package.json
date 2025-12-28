@@ -1,0 +1,17 @@
+{
+  "name": "@shadcn-mini/editor-core",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Framework-agnostic core for shadcn-mini-figma (schema, state, commands).",
+  "keywords": [
+    "shadcn-mini-figma",
+    "editor-core",
+    "schema",
+    "state",
+    "commands",
+    "serialization"
+  ],
+  "author": "joseph0926",
+  "license": "MIT",
+  "type": "module"
+}

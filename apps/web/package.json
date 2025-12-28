@@ -1,0 +1,40 @@
+{
+  "name": "@shadcn-mini/web",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Web app for shadcn-mini-figma (landing and editor).",
+  "keywords": [
+    "shadcn-mini-figma",
+    "prototype",
+    "visual-editor",
+    "drag-and-drop",
+    "nextjs",
+    "app-router",
+    "shadcn-ui",
+    "no-code",
+    "ui-builder"
+  ],
+  "author": "joseph0926",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
