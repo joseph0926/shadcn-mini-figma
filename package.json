@@ -1,0 +1,21 @@
+{
+  "name": "shadcn-mini-figma",
+  "version": "0.0.1",
+  "description": "shadcn-mini-figma is a web-based visual editor for building realistic UI prototypes by dragging and arranging shadcn/ui components. It is designed for non-developers who need to communicate ideas quickly without writing code.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "prototype",
+    "visual-editor",
+    "drag-and-drop",
+    "shadcn-ui",
+    "no-code",
+    "ui-builder"
+  ],
+  "author": "joseph0926",
+  "license": "MIT",
+  "packageManager": "pnpm@10.26.1"
+}
