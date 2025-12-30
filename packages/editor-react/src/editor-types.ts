@@ -1,4 +1,4 @@
-import type { DocumentState, NodeId, Position } from "@shadcn-mini/editor-core";
+import type { DocumentState, NodeId, NodeBase, Position } from "@shadcn-mini/editor-core";
 import type { ReactNode } from "react";
 
 export interface EditorState {
@@ -10,6 +10,13 @@ export interface EditorActions {
   addNode: (type: string, position: Position) => NodeId;
   selectNode: (id: NodeId | null) => void;
   moveNode: (id: NodeId, delta: Position) => void;
+  updateNode: (id: NodeId, patch: Partial<Omit<NodeBase, "id">>) => void;
+  deleteNode: (id: NodeId) => void;
+  duplicateNode: (id: NodeId) => NodeId;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export type DraggableData =

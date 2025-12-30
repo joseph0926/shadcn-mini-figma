@@ -4,12 +4,12 @@ import { useEditorContext } from "@shadcn-mini/editor-react";
 import { Input } from "@/components/ui/input";
 
 export function PropertiesPanel() {
-  const { selectedId, document } = useEditorContext();
+  const { selectedId, document, updateNode } = useEditorContext();
   const selectedNode = selectedId ? document.nodes[selectedId] : null;
 
   if (!selectedNode) {
     return (
-      <aside className="w-64 border-l border-editor-panel-border bg-editor-panel-bg flex-shrink-0">
+      <aside className="w-64 border-l border-editor-panel-border bg-editor-panel-bg shrink-0">
         <div className="p-4 border-b border-editor-panel-border">
           <h3 className="text-sm font-medium">Properties</h3>
         </div>
@@ -20,8 +20,33 @@ export function PropertiesPanel() {
     );
   }
 
+  const handlePositionChange = (axis: "x" | "y", value: string) => {
+    if (!selectedId) return;
+    const num = parseFloat(value);
+    if (isNaN(num)) return;
+    updateNode(selectedId, {
+      position: { ...selectedNode.position, [axis]: num },
+    });
+  };
+
+  const handleSizeChange = (dim: "width" | "height", value: string) => {
+    if (!selectedId) return;
+    const num = parseFloat(value);
+    if (isNaN(num) || num < 1) return;
+    updateNode(selectedId, {
+      size: { ...selectedNode.size, [dim]: num },
+    });
+  };
+
+  const handlePropChange = (key: string, value: string) => {
+    if (!selectedId) return;
+    updateNode(selectedId, {
+      props: { [key]: value },
+    });
+  };
+
   return (
-    <aside className="w-64 border-l border-editor-panel-border bg-editor-panel-bg flex-shrink-0 overflow-y-auto">
+    <aside className="w-64 border-l border-editor-panel-border bg-editor-panel-bg shrink-0 overflow-y-auto">
       <div className="p-4 border-b border-editor-panel-border">
         <h3 className="text-sm font-medium">{selectedNode.type}</h3>
       </div>
@@ -37,8 +62,8 @@ export function PropertiesPanel() {
               <Input
                 type="number"
                 value={Math.round(selectedNode.position.x)}
+                onChange={(e) => handlePositionChange("x", e.target.value)}
                 className="h-8 text-sm"
-                readOnly
               />
             </div>
             <div>
@@ -46,8 +71,8 @@ export function PropertiesPanel() {
               <Input
                 type="number"
                 value={Math.round(selectedNode.position.y)}
+                onChange={(e) => handlePositionChange("y", e.target.value)}
                 className="h-8 text-sm"
-                readOnly
               />
             </div>
           </div>
@@ -63,8 +88,8 @@ export function PropertiesPanel() {
               <Input
                 type="number"
                 value={selectedNode.size.width}
+                onChange={(e) => handleSizeChange("width", e.target.value)}
                 className="h-8 text-sm"
-                readOnly
               />
             </div>
             <div>
@@ -72,8 +97,8 @@ export function PropertiesPanel() {
               <Input
                 type="number"
                 value={selectedNode.size.height}
+                onChange={(e) => handleSizeChange("height", e.target.value)}
                 className="h-8 text-sm"
-                readOnly
               />
             </div>
           </div>
@@ -90,8 +115,8 @@ export function PropertiesPanel() {
                   <span className="text-xs text-muted-foreground">{key}</span>
                   <Input
                     value={String(value)}
+                    onChange={(e) => handlePropChange(key, e.target.value)}
                     className="h-8 text-sm"
-                    readOnly
                   />
                 </div>
               ))}

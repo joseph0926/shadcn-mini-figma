@@ -14,11 +14,16 @@ export { DEFAULT_SIZES, DEFAULT_PROPS } from "./editor-types";
 export { useEditor } from "./hooks/useEditor";
 export type { UseEditorReturn } from "./hooks/useEditor";
 
+export { useEditorKeyboard } from "./hooks/useEditorKeyboard";
+
 export { EditorProvider, useEditorContext } from "./context/EditorContext";
 export type { EditorProviderProps } from "./context/EditorContext";
 
 export { RegistryProvider, useRendererRegistry } from "./context/RegistryContext";
 export type { RegistryProviderProps } from "./context/RegistryContext";
+
+export { DndProvider, useDndCanvasRef } from "./context/DndProvider";
+export type { DndProviderProps } from "./context/DndProvider";
 
 export { Canvas } from "./canvas/Canvas";
 export type { CanvasProps } from "./canvas/Canvas";

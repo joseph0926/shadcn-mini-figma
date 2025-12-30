@@ -1,12 +1,14 @@
 # shadcn-mini-figma
 
-A web-based visual editor for building UI prototypes by dragging and arranging shadcn/ui components. Designed for non-developers who need to communicate ideas quickly without writing code.
+A web-based visual editor for building UI prototypes using shadcn/ui components. Designed for non-developers who need to communicate ideas quickly without writing code.
 
 ## Features
 
 - Drag components from a palette onto a canvas
-- Select and move components freely
-- 3-panel layout: Palette, Canvas, Properties
+- Select, move, and resize components
+- Edit properties via the Properties Panel
+- Undo/Redo support
+- Delete and duplicate nodes
 - Smooth animations powered by Motion
 - Real-time drag preview
 
@@ -42,21 +44,33 @@ packages/editor-react    # React renderer with dnd-kit and motion
 - shadcn/ui components
 - Tailwind CSS v4
 
-## MVP Scope
+## Keyboard Shortcuts
 
-**Included**
+| Shortcut | Action |
+|----------|--------|
+| Delete / Backspace | Delete selected node |
+| Ctrl+D (Cmd+D) | Duplicate selected node |
+| Ctrl+Z (Cmd+Z) | Undo |
+| Ctrl+Shift+Z (Cmd+Shift+Z) | Redo |
+
+## Current Scope
+
+**Implemented**
 
 - Add components from palette to canvas
-- Select components on canvas
-- Move components to reposition
+- Select and move components
+- Resize via drag handles
+- Edit position, size, and props in Properties Panel
+- Delete and duplicate nodes
+- Undo/Redo
 - 3 component types: Button, Card, Input
 
-**Not included (planned for v1.1)**
+**Planned**
 
-- Resize, rotate, snapping, alignment guides
-- Property editing
-- Local storage, image export
-- Collaboration, version history
+- Additional component types (Text, Container, Image, etc.)
+- Local storage persistence
+- Image export
+- Templates
 
 ## License
 

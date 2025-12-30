@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { motion } from "motion/react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import type { NodeId } from "@shadcn-mini/editor-core";
+import type { NodeId, Size, Position } from "@shadcn-mini/editor-core";
 import { useEditorContext } from "../context/EditorContext";
 import { useRendererRegistry } from "../context/RegistryContext";
+import { ResizeHandles } from "./ResizeHandles";
 import type { DraggableData } from "../editor-types";
 
 export interface CanvasNodeProps {
@@ -12,9 +13,19 @@ export interface CanvasNodeProps {
 }
 
 export function CanvasNode({ nodeId }: CanvasNodeProps) {
-  const { document, selectedId, selectNode } = useEditorContext();
+  const { document, selectedId, selectNode, updateNode, moveNode } = useEditorContext();
   const registry = useRendererRegistry();
   const node = document.nodes[nodeId];
+
+  const handleResize = useCallback(
+    (newSize: Size, positionDelta: Position) => {
+      updateNode(nodeId, { size: newSize });
+      if (positionDelta.x !== 0 || positionDelta.y !== 0) {
+        moveNode(nodeId, positionDelta);
+      }
+    },
+    [nodeId, updateNode, moveNode]
+  );
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
@@ -61,16 +72,19 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
       className={`cursor-grab rounded-md ${isDragging ? "cursor-grabbing" : ""}`}
     >
       {isSelected && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none rounded-md"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          style={{
-            outline: "2px solid hsl(217, 91%, 60%)",
-            outlineOffset: "2px",
-          }}
-          layoutId={`selection-${nodeId}`}
-        />
+        <>
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              outline: "2px solid hsl(217, 91%, 60%)",
+              outlineOffset: "2px",
+            }}
+            layoutId={`selection-${nodeId}`}
+          />
+          <ResizeHandles size={node.size} onResize={handleResize} />
+        </>
       )}
       {Renderer ? <Renderer node={node} isSelected={isSelected} /> : null}
     </motion.div>

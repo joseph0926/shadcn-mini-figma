@@ -1,9 +1,12 @@
 "use client";
 
 import { Undo2, Redo2, Eye, Download } from "lucide-react";
+import { useEditorContext } from "@shadcn-mini/editor-react";
 import { Button } from "@/components/ui/button";
 
 export function EditorHeader() {
+  const { undo, redo, canUndo, canRedo } = useEditorContext();
+
   return (
     <header className="h-12 flex items-center justify-between px-4 border-b border-editor-panel-border bg-editor-panel-bg">
       <div className="flex items-center gap-3">
@@ -18,10 +21,22 @@ export function EditorHeader() {
       </div>
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={undo}
+          disabled={!canUndo}
+        >
           <Undo2 className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={redo}
+          disabled={!canRedo}
+        >
           <Redo2 className="h-4 w-4" />
         </Button>
         <div className="w-px h-4 bg-border mx-1" />
