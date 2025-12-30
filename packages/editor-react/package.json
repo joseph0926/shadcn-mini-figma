@@ -14,8 +14,21 @@
   "author": "joseph0926",
   "license": "MIT",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "dependencies": {
-    "@shadcn-mini/editor-core": "workspace:*"
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@shadcn-mini/editor-core": "workspace:*",
+    "motion": "^12.23.26",
+    "nanoid": "^5.1.6"
   },
   "peerDependencies": {
     "react": "^19.2.3",
