@@ -11,6 +11,7 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Layers panel with visibility toggle
 - Edit position, size, and props in Properties Panel
 - Configure component variants (Button: variant/size, Card: title/description, Input: placeholder)
+- Color customization (text, background, border) with Tailwind color palette
 - Undo/Redo with keyboard shortcuts
 - Delete and duplicate nodes (supports multi-selection)
 - Canvas zoom (25% - 400%)
@@ -70,6 +71,7 @@ packages/editor-react    # React renderer with dnd-kit and motion
 - Resize via 8-direction drag handles
 - Edit position, size, and props in Properties Panel
 - Configure component variants via Select dropdowns
+- Color customization (text, background, border colors)
 - Delete and duplicate nodes (single and multi)
 - Undo/Redo
 - Canvas zoom in/out with percentage display

@@ -97,25 +97,25 @@
 }
 
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -160,4 +160,25 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@utility safelist {
+  @apply text-gray-100 text-gray-300 text-gray-500 text-gray-700 text-gray-900;
+  @apply text-red-100 text-red-300 text-red-500 text-red-700;
+  @apply text-blue-100 text-blue-300 text-blue-500 text-blue-700;
+  @apply text-green-100 text-green-500 text-green-700;
+  @apply text-yellow-100 text-yellow-500;
+  @apply text-purple-100 text-purple-500 text-purple-700;
+  @apply bg-gray-100 bg-gray-300 bg-gray-500 bg-gray-700 bg-gray-900;
+  @apply bg-red-100 bg-red-300 bg-red-500 bg-red-700;
+  @apply bg-blue-100 bg-blue-300 bg-blue-500 bg-blue-700;
+  @apply bg-green-100 bg-green-500 bg-green-700;
+  @apply bg-yellow-100 bg-yellow-500;
+  @apply bg-purple-100 bg-purple-500 bg-purple-700;
+  @apply border-gray-100 border-gray-300 border-gray-500 border-gray-700 border-gray-900;
+  @apply border-red-100 border-red-300 border-red-500 border-red-700;
+  @apply border-blue-100 border-blue-300 border-blue-500 border-blue-700;
+  @apply border-green-100 border-green-500 border-green-700;
+  @apply border-yellow-100 border-yellow-500;
+  @apply border-purple-100 border-purple-500 border-purple-700;
 }

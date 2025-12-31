@@ -69,6 +69,73 @@ export interface PropSchema {
   defaultValue?: unknown;
 }
 
+export const TAILWIND_COLORS: PropSchemaOption[] = [
+  { value: "", label: "Default" },
+  { value: "gray-100", label: "Gray 100" },
+  { value: "gray-300", label: "Gray 300" },
+  { value: "gray-500", label: "Gray 500" },
+  { value: "gray-700", label: "Gray 700" },
+  { value: "gray-900", label: "Gray 900" },
+  { value: "red-100", label: "Red 100" },
+  { value: "red-300", label: "Red 300" },
+  { value: "red-500", label: "Red 500" },
+  { value: "red-700", label: "Red 700" },
+  { value: "blue-100", label: "Blue 100" },
+  { value: "blue-300", label: "Blue 300" },
+  { value: "blue-500", label: "Blue 500" },
+  { value: "blue-700", label: "Blue 700" },
+  { value: "green-100", label: "Green 100" },
+  { value: "green-500", label: "Green 500" },
+  { value: "green-700", label: "Green 700" },
+  { value: "yellow-100", label: "Yellow 100" },
+  { value: "yellow-500", label: "Yellow 500" },
+  { value: "purple-100", label: "Purple 100" },
+  { value: "purple-500", label: "Purple 500" },
+  { value: "purple-700", label: "Purple 700" },
+];
+
+export const COLOR_PROPS_SCHEMA: PropSchema[] = [
+  {
+    key: "textColor",
+    label: "Text Color",
+    type: "select",
+    options: [
+      { value: "", label: "Default" },
+      ...TAILWIND_COLORS.filter(c => c.value).map(c => ({
+        value: `text-${c.value}`,
+        label: c.label,
+      })),
+    ],
+    defaultValue: "",
+  },
+  {
+    key: "bgColor",
+    label: "Background",
+    type: "select",
+    options: [
+      { value: "", label: "Default" },
+      ...TAILWIND_COLORS.filter(c => c.value).map(c => ({
+        value: `bg-${c.value}`,
+        label: c.label,
+      })),
+    ],
+    defaultValue: "",
+  },
+  {
+    key: "borderColor",
+    label: "Border",
+    type: "select",
+    options: [
+      { value: "", label: "Default" },
+      ...TAILWIND_COLORS.filter(c => c.value).map(c => ({
+        value: `border-${c.value}`,
+        label: c.label,
+      })),
+    ],
+    defaultValue: "",
+  },
+];
+
 export const COMPONENT_SCHEMAS: Record<string, PropSchema[]> = {
   Button: [
     { key: "label", label: "Label", type: "text", defaultValue: "Button" },
@@ -98,12 +165,15 @@ export const COMPONENT_SCHEMAS: Record<string, PropSchema[]> = {
       ],
       defaultValue: "default",
     },
+    ...COLOR_PROPS_SCHEMA,
   ],
   Card: [
     { key: "title", label: "Title", type: "text", defaultValue: "Card Title" },
     { key: "description", label: "Description", type: "text", defaultValue: "Card description" },
+    ...COLOR_PROPS_SCHEMA,
   ],
   Input: [
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "Enter text..." },
+    ...COLOR_PROPS_SCHEMA,
   ],
 };
