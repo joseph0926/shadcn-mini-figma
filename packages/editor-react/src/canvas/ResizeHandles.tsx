@@ -73,6 +73,9 @@ export function ResizeHandles({
       const startWidth = size.width;
       const startHeight = size.height;
 
+      let lastPosX = 0;
+      let lastPosY = 0;
+
       const handleMouseMove = (moveE: MouseEvent) => {
         if (rafIdRef.current !== null) {
           cancelAnimationFrame(rafIdRef.current);
@@ -108,7 +111,12 @@ export function ResizeHandles({
             newHeight = minSize;
           }
 
-          onResize({ width: newWidth, height: newHeight }, { x: posX, y: posY });
+          const deltaX = posX - lastPosX;
+          const deltaY = posY - lastPosY;
+          lastPosX = posX;
+          lastPosY = posY;
+
+          onResize({ width: newWidth, height: newHeight }, { x: deltaX, y: deltaY });
           rafIdRef.current = null;
         });
       };
@@ -134,6 +142,7 @@ export function ResizeHandles({
       {(Object.keys(handlePositions) as HandlePosition[]).map((pos) => (
         <div
           key={pos}
+          data-resize-handle
           className="bg-editor-selection"
           style={{
             position: "absolute",

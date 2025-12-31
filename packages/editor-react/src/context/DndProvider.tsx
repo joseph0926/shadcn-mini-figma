@@ -4,10 +4,10 @@ import {
   DragOverlay,
   type DragEndEvent,
   type DragStartEvent,
-  PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import { ResizeAwarePointerSensor } from "../sensors/ResizeAwarePointerSensor";
 import { useEditorContext } from "./EditorContext";
 import { useRendererRegistry } from "./RegistryContext";
 import { DragPreview } from "../canvas/DragPreview";
@@ -25,7 +25,7 @@ export function DndProvider({ children }: DndProviderProps) {
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(ResizeAwarePointerSensor, {
       activationConstraint: { distance: 5 },
     })
   );
