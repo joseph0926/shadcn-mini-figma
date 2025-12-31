@@ -13,9 +13,10 @@ import type { DraggableData } from "../editor-types";
 
 export interface CanvasNodeProps {
   nodeId: NodeId;
+  nodeIndex?: number;
 }
 
-export function CanvasNode({ nodeId }: CanvasNodeProps) {
+export function CanvasNode({ nodeId, nodeIndex = 0 }: CanvasNodeProps) {
   const { document, selectedIds, selectNode, updateNode, moveNode, zoom } = useEditorContext();
   const registry = useRendererRegistry();
   const dropTargetId = useDropTarget();
@@ -79,7 +80,7 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
         boxShadow: isDragging
           ? "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)"
           : "0 1px 3px 0 rgba(0,0,0,0.1)",
-        zIndex: isDragging ? 1000 : 1,
+        zIndex: isDragging ? 1000 : nodeIndex + 1,
       }}
       whileHover={{
         boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",

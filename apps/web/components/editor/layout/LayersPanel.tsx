@@ -5,6 +5,7 @@ import { Eye, EyeOff, ChevronRight, ChevronDown, Lock, Unlock, Folder, FolderOpe
 import { useEditorContext } from "@shadcn-mini/editor-react";
 import { type NodeId, isContainerType } from "@shadcn-mini/editor-core";
 import { Button } from "@/components/ui/button";
+import { NodeContextMenu, useContextMenu } from "../shared/NodeContextMenu";
 
 type DropPosition = "before" | "inside" | "after" | null;
 
@@ -13,9 +14,10 @@ interface LayerItemProps {
   depth?: number;
   index?: number;
   parentId: NodeId;
+  onContextMenu: (e: React.MouseEvent, nodeId: NodeId) => void;
 }
 
-function LayerItem({ nodeId, depth = 0, index = 0, parentId }: LayerItemProps) {
+function LayerItem({ nodeId, depth = 0, index = 0, parentId, onContextMenu }: LayerItemProps) {
   const { document, selectedIds, selectNode, toggleVisibility, toggleLock, enterGroup, editingGroupId, reparentNode } = useEditorContext();
   const [isExpanded, setIsExpanded] = useState(true);
   const [dropPosition, setDropPosition] = useState<DropPosition>(null);
@@ -103,6 +105,15 @@ function LayerItem({ nodeId, depth = 0, index = 0, parentId }: LayerItemProps) {
     setDropPosition(null);
   };
 
+  const handleItemContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isSelected) {
+      selectNode(nodeId);
+    }
+    onContextMenu(e, nodeId);
+  };
+
   return (
     <>
       <div
@@ -117,6 +128,7 @@ function LayerItem({ nodeId, depth = 0, index = 0, parentId }: LayerItemProps) {
           selectNode(nodeId, { addToSelection: e.shiftKey || e.metaKey || e.ctrlKey });
         }}
         onDoubleClick={handleDoubleClick}
+        onContextMenu={handleItemContextMenu}
         draggable={!isLocked}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -198,6 +210,7 @@ function LayerItem({ nodeId, depth = 0, index = 0, parentId }: LayerItemProps) {
               depth={depth + 1}
               index={childIndex}
               parentId={nodeId}
+              onContextMenu={onContextMenu}
             />
           ))}
         </div>
@@ -208,11 +221,16 @@ function LayerItem({ nodeId, depth = 0, index = 0, parentId }: LayerItemProps) {
 
 export function LayersPanel() {
   const { document } = useEditorContext();
+  const { open, position, handleContextMenu, handleClose } = useContextMenu();
 
   const rootNode = document.nodes[document.rootId];
   const childIds = rootNode?.children ?? [];
 
   const reversedIds = [...childIds].reverse();
+
+  const handleLayerContextMenu = (e: React.MouseEvent, _nodeId: NodeId) => {
+    handleContextMenu(e);
+  };
 
   return (
     <aside className="w-48 border-l border-editor-panel-border bg-editor-panel-bg shrink-0 overflow-y-auto">
@@ -228,10 +246,17 @@ export function LayersPanel() {
           </div>
         ) : (
           reversedIds.map((id, index) => (
-            <LayerItem key={id} nodeId={id} index={index} parentId={document.rootId} />
+            <LayerItem
+              key={id}
+              nodeId={id}
+              index={index}
+              parentId={document.rootId}
+              onContextMenu={handleLayerContextMenu}
+            />
           ))
         )}
       </div>
+      <NodeContextMenu open={open} position={position} onClose={handleClose} />
     </aside>
   );
 }

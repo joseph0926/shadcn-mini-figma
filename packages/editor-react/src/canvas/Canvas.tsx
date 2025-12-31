@@ -9,31 +9,38 @@ import { GroupNode } from "./GroupNode";
 
 export interface CanvasProps {
   className?: string;
+  onContextMenu?: (e: React.MouseEvent) => void;
 }
 
-export function Canvas({ className }: CanvasProps) {
-  const { document, selectNode, zoom } = useEditorContext();
-  const setCanvasRef = useDndCanvasRef();
-  useEditorKeyboard();
+export const Canvas = React.forwardRef<HTMLDivElement, CanvasProps>(
+  function Canvas({ className, onContextMenu }, forwardedRef) {
+    const { document, selectNode, zoom } = useEditorContext();
+    const setCanvasRef = useDndCanvasRef();
+    useEditorKeyboard();
 
-  const { setNodeRef, isOver } = useDroppable({
-    id: "canvas",
-    data: { type: "canvas" },
-  });
+    const { setNodeRef, isOver } = useDroppable({
+      id: "canvas",
+      data: { type: "canvas" },
+    });
 
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      selectNode(null);
-    }
-  };
+    const handleCanvasClick = (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) {
+        selectNode(null);
+      }
+    };
 
-  const rootNode = document.nodes[document.rootId];
-  const childIds = rootNode?.children ?? [];
+    const rootNode = document.nodes[document.rootId];
+    const childIds = rootNode?.children ?? [];
 
-  const setRefs = (node: HTMLDivElement | null) => {
-    setNodeRef(node);
-    setCanvasRef(node);
-  };
+    const setRefs = (node: HTMLDivElement | null) => {
+      setNodeRef(node);
+      setCanvasRef(node);
+      if (typeof forwardedRef === "function") {
+        forwardedRef(node);
+      } else if (forwardedRef) {
+        forwardedRef.current = node;
+      }
+    };
 
   return (
     <div
@@ -47,6 +54,7 @@ export function Canvas({ className }: CanvasProps) {
         overflow: "hidden",
       }}
       onClick={handleCanvasClick}
+      onContextMenu={onContextMenu}
     >
       <AnimatePresence>
         {isOver && (
@@ -68,14 +76,15 @@ export function Canvas({ className }: CanvasProps) {
           height: "100%",
         }}
       >
-        {childIds.map((id) => {
+        {childIds.map((id, index) => {
           const node = document.nodes[id];
           if (node?.type === "Group") {
-            return <GroupNode key={id} nodeId={id} />;
+            return <GroupNode key={id} nodeId={id} nodeIndex={index} />;
           }
-          return <CanvasNode key={id} nodeId={id} />;
+          return <CanvasNode key={id} nodeId={id} nodeIndex={index} />;
         })}
       </div>
     </div>
   );
-}
+  }
+);

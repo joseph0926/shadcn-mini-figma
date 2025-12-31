@@ -12,9 +12,10 @@ import type { DraggableData } from "../editor-types";
 
 export interface GroupNodeProps {
   nodeId: NodeId;
+  nodeIndex?: number;
 }
 
-export function GroupNode({ nodeId }: GroupNodeProps) {
+export function GroupNode({ nodeId, nodeIndex = 0 }: GroupNodeProps) {
   const {
     document,
     selectedIds,
@@ -138,7 +139,7 @@ export function GroupNode({ nodeId }: GroupNodeProps) {
       animate={{
         opacity: isDragging ? 0.8 : 1,
         scale: 1,
-        zIndex: isDragging ? 1000 : isEditing ? 100 : 1,
+        zIndex: isDragging ? 1000 : isEditing ? 100 : nodeIndex + 1,
       }}
       transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
       onClick={handleClick}
@@ -203,8 +204,8 @@ export function GroupNode({ nodeId }: GroupNodeProps) {
         className="absolute inset-0"
         style={{ pointerEvents: isEditing ? "auto" : "none" }}
       >
-        {children.map((childId) => (
-          <CanvasNode key={childId} nodeId={childId} />
+        {children.map((childId, childIndex) => (
+          <CanvasNode key={childId} nodeId={childId} nodeIndex={childIndex} />
         ))}
       </div>
     </motion.div>
