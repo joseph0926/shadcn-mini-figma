@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import type { Size, Position } from "@shadcn-mini/editor-core";
 
 export interface ResizeHandlesProps {
@@ -59,6 +59,8 @@ export function ResizeHandles({
   onResizeStart,
   onResizeEnd,
 }: ResizeHandlesProps) {
+  const rafIdRef = useRef<number | null>(null);
+
   const handleMouseDown = useCallback(
     (handle: HandlePosition) => (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -72,39 +74,50 @@ export function ResizeHandles({
       const startHeight = size.height;
 
       const handleMouseMove = (moveE: MouseEvent) => {
-        const dx = (moveE.clientX - startX) / zoom;
-        const dy = (moveE.clientY - startY) / zoom;
-
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-        let posX = 0;
-        let posY = 0;
-
-        if (handle.includes("e")) newWidth = startWidth + dx;
-        if (handle.includes("w")) {
-          newWidth = startWidth - dx;
-          posX = dx;
-        }
-        if (handle.includes("s")) newHeight = startHeight + dy;
-        if (handle.includes("n")) {
-          newHeight = startHeight - dy;
-          posY = dy;
+        if (rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
         }
 
-        const minSize = 20;
-        if (newWidth < minSize) {
-          if (handle.includes("w")) posX -= minSize - newWidth;
-          newWidth = minSize;
-        }
-        if (newHeight < minSize) {
-          if (handle.includes("n")) posY -= minSize - newHeight;
-          newHeight = minSize;
-        }
+        rafIdRef.current = requestAnimationFrame(() => {
+          const dx = (moveE.clientX - startX) / zoom;
+          const dy = (moveE.clientY - startY) / zoom;
 
-        onResize({ width: newWidth, height: newHeight }, { x: posX, y: posY });
+          let newWidth = startWidth;
+          let newHeight = startHeight;
+          let posX = 0;
+          let posY = 0;
+
+          if (handle.includes("e")) newWidth = startWidth + dx;
+          if (handle.includes("w")) {
+            newWidth = startWidth - dx;
+            posX = dx;
+          }
+          if (handle.includes("s")) newHeight = startHeight + dy;
+          if (handle.includes("n")) {
+            newHeight = startHeight - dy;
+            posY = dy;
+          }
+
+          const minSize = 20;
+          if (newWidth < minSize) {
+            if (handle.includes("w")) posX -= minSize - newWidth;
+            newWidth = minSize;
+          }
+          if (newHeight < minSize) {
+            if (handle.includes("n")) posY -= minSize - newHeight;
+            newHeight = minSize;
+          }
+
+          onResize({ width: newWidth, height: newHeight }, { x: posX, y: posY });
+          rafIdRef.current = null;
+        });
       };
 
       const handleMouseUp = () => {
+        if (rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
+          rafIdRef.current = null;
+        }
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
         onResizeEnd?.();

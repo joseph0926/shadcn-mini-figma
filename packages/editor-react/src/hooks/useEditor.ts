@@ -312,7 +312,7 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
       .map((id) => document.nodes[id])
       .filter(Boolean) as NodeBase[];
     if (nodes.length === 0) return;
-    setClipboard(nodes);
+    setClipboard(structuredClone(nodes));
   }, [selectedIdsState, document.nodes]);
 
   const pasteNodes = useCallback((): NodeId[] => {
@@ -349,8 +349,12 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
 
   const loadDocument = useCallback(
     (json: string) => {
-      const doc = deserializeDocument(json);
-      reset(doc);
+      const result = deserializeDocument(json);
+      if (!result.success) {
+        console.error("Failed to load document:", result.error);
+        return;
+      }
+      reset(result.document);
       setSelectedIdsState(new Set());
     },
     [reset]

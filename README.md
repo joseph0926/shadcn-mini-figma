@@ -55,17 +55,17 @@ packages/editor-react    # React renderer with dnd-kit and motion
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| Delete / Backspace | Delete selected node(s) |
-| Ctrl+C (Cmd+C) | Copy selected node(s) |
-| Ctrl+V (Cmd+V) | Paste copied node(s) |
-| Ctrl+X (Cmd+X) | Cut selected node(s) |
-| Ctrl+D (Cmd+D) | Duplicate selected node(s) |
-| Ctrl+A (Cmd+A) | Select all nodes |
-| Escape | Clear selection |
-| Ctrl+Z (Cmd+Z) | Undo |
-| Ctrl+Shift+Z (Cmd+Shift+Z) | Redo |
+| Shortcut                   | Action                     |
+| -------------------------- | -------------------------- |
+| Delete / Backspace         | Delete selected node(s)    |
+| Ctrl+C (Cmd+C)             | Copy selected node(s)      |
+| Ctrl+V (Cmd+V)             | Paste copied node(s)       |
+| Ctrl+X (Cmd+X)             | Cut selected node(s)       |
+| Ctrl+D (Cmd+D)             | Duplicate selected node(s) |
+| Ctrl+A (Cmd+A)             | Select all nodes           |
+| Escape                     | Clear selection            |
+| Ctrl+Z (Cmd+Z)             | Undo                       |
+| Ctrl+Shift+Z (Cmd+Shift+Z) | Redo                       |
 
 ## Planned
 

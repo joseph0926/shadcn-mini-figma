@@ -12,6 +12,8 @@ interface HistoryState {
   future: DocumentState[];
 }
 
+const MAX_HISTORY_SIZE = 50;
+
 export interface UseEditorHistoryReturn {
   document: DocumentState;
   dispatch: (command: Command) => void;
@@ -36,8 +38,13 @@ export function useEditorHistory(
       const newPresent = applyCommand(prev.present, command);
       if (newPresent === prev.present) return prev;
 
+      const newPast = [...prev.past, prev.present];
+      if (newPast.length > MAX_HISTORY_SIZE) {
+        newPast.shift();
+      }
+
       return {
-        past: [...prev.past, prev.present],
+        past: newPast,
         present: newPresent,
         future: [],
       };
@@ -51,10 +58,15 @@ export function useEditorHistory(
       const newPast = [...prev.past];
       const newPresent = newPast.pop()!;
 
+      const newFuture = [prev.present, ...prev.future];
+      if (newFuture.length > MAX_HISTORY_SIZE) {
+        newFuture.pop();
+      }
+
       return {
         past: newPast,
         present: newPresent,
-        future: [prev.present, ...prev.future],
+        future: newFuture,
       };
     });
   }, []);
@@ -65,8 +77,13 @@ export function useEditorHistory(
 
       const [newPresent, ...newFuture] = prev.future;
 
+      const newPast = [...prev.past, prev.present];
+      if (newPast.length > MAX_HISTORY_SIZE) {
+        newPast.shift();
+      }
+
       return {
-        past: [...prev.past, prev.present],
+        past: newPast,
         present: newPresent,
         future: newFuture,
       };

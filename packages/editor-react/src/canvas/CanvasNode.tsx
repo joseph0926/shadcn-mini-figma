@@ -116,7 +116,15 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
           <Lock className="h-3 w-3 text-muted-foreground" />
         </div>
       )}
-      {Renderer ? <Renderer node={node} isSelected={isSelected} /> : null}
+      {Renderer ? (
+        <Renderer node={node} isSelected={isSelected} />
+      ) : (
+        <div className="flex items-center justify-center w-full h-full bg-muted/50 border border-dashed border-muted-foreground/30 rounded-md">
+          <span className="text-xs text-muted-foreground">
+            Unknown: {node.type}
+          </span>
+        </div>
+      )}
     </motion.div>
   );
 }
