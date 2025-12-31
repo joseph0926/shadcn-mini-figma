@@ -4,6 +4,8 @@ import {
   type NodeId,
   type NodeBase,
   type Position,
+  serializeDocument,
+  deserializeDocument,
 } from "@shadcn-mini/editor-core";
 import { nanoid } from "nanoid";
 import { useEditorHistory } from "./useEditorHistory";
@@ -22,12 +24,31 @@ export interface UseEditorReturn {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  zoom: number;
+  setZoom: (zoom: number) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  saveDocument: () => string;
+  loadDocument: (json: string) => void;
 }
 
 export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
-  const { document, dispatch, undo, redo, canUndo, canRedo } =
+  const { document, dispatch, undo, redo, reset, canUndo, canRedo } =
     useEditorHistory(initialDocument);
   const [selectedId, setSelectedId] = useState<NodeId | null>(null);
+  const [zoom, setZoomState] = useState(1);
+
+  const setZoom = useCallback((z: number) => {
+    setZoomState(Math.max(0.25, Math.min(4, z)));
+  }, []);
+
+  const zoomIn = useCallback(() => {
+    setZoomState((prev) => Math.min(4, prev + 0.1));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    setZoomState((prev) => Math.max(0.25, prev - 0.1));
+  }, []);
 
   const addNode = useCallback(
     (type: string, position: Position): NodeId => {
@@ -107,6 +128,19 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     [dispatch, document.nodes]
   );
 
+  const saveDocument = useCallback(() => {
+    return serializeDocument(document);
+  }, [document]);
+
+  const loadDocument = useCallback(
+    (json: string) => {
+      const doc = deserializeDocument(json);
+      reset(doc);
+      setSelectedId(null);
+    },
+    [reset]
+  );
+
   return {
     document,
     selectedId,
@@ -120,5 +154,11 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     redo,
     canUndo,
     canRedo,
+    zoom,
+    setZoom,
+    zoomIn,
+    zoomOut,
+    saveDocument,
+    loadDocument,
   };
 }

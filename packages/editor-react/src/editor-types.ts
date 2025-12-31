@@ -40,7 +40,59 @@ export const DEFAULT_SIZES: Record<string, { width: number; height: number }> = 
 };
 
 export const DEFAULT_PROPS: Record<string, Record<string, unknown>> = {
-  Button: { label: "Button", variant: "default" },
+  Button: { label: "Button", variant: "default", size: "default" },
   Card: { title: "Card Title", description: "Card description" },
   Input: { placeholder: "Enter text..." },
+};
+
+export interface PropSchemaOption {
+  value: string;
+  label: string;
+}
+
+export interface PropSchema {
+  key: string;
+  label: string;
+  type: "text" | "select" | "number" | "boolean";
+  options?: PropSchemaOption[];
+  defaultValue?: unknown;
+}
+
+export const COMPONENT_SCHEMAS: Record<string, PropSchema[]> = {
+  Button: [
+    { key: "label", label: "Label", type: "text", defaultValue: "Button" },
+    {
+      key: "variant",
+      label: "Variant",
+      type: "select",
+      options: [
+        { value: "default", label: "Default" },
+        { value: "destructive", label: "Destructive" },
+        { value: "outline", label: "Outline" },
+        { value: "secondary", label: "Secondary" },
+        { value: "ghost", label: "Ghost" },
+        { value: "link", label: "Link" },
+      ],
+      defaultValue: "default",
+    },
+    {
+      key: "size",
+      label: "Size",
+      type: "select",
+      options: [
+        { value: "default", label: "Default" },
+        { value: "sm", label: "Small" },
+        { value: "lg", label: "Large" },
+        { value: "icon", label: "Icon" },
+      ],
+      defaultValue: "default",
+    },
+  ],
+  Card: [
+    { key: "title", label: "Title", type: "text", defaultValue: "Card Title" },
+    { key: "description", label: "Description", type: "text", defaultValue: "Card description" },
+  ],
+  Input: [
+    { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "Enter text..." },
+  ],
 };

@@ -17,6 +17,7 @@ export interface UseEditorHistoryReturn {
   dispatch: (command: Command) => void;
   undo: () => void;
   redo: () => void;
+  reset: (doc: DocumentState) => void;
   canUndo: boolean;
   canRedo: boolean;
 }
@@ -72,11 +73,20 @@ export function useEditorHistory(
     });
   }, []);
 
+  const reset = useCallback((doc: DocumentState) => {
+    setHistory({
+      past: [],
+      present: doc,
+      future: [],
+    });
+  }, []);
+
   return {
     document: history.present,
     dispatch,
     undo,
     redo,
+    reset,
     canUndo: history.past.length > 0,
     canRedo: history.future.length > 0,
   };

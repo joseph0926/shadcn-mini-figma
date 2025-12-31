@@ -12,7 +12,7 @@ export function CardRenderer({ node }: NodeRendererProps) {
   const description = (node.props.description as string) ?? "Card description";
 
   return (
-    <Card className="w-[300px] pointer-events-none">
+    <Card className="pointer-events-none" style={{ width: "100%", height: "100%" }}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

@@ -7,7 +7,8 @@ export function InputRenderer({ node }: NodeRendererProps) {
   return (
     <Input
       placeholder={placeholder}
-      className="w-[200px] pointer-events-none"
+      className="pointer-events-none"
+      style={{ width: "100%", height: "100%" }}
       readOnly
     />
   );

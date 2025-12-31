@@ -5,18 +5,16 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 ## Features
 
 - Drag components from a palette onto a canvas
-- Select, move, and resize components
-- Edit properties via the Properties Panel
-- Undo/Redo support
+- Select, move, and resize components via 8-direction handles
+- Edit position, size, and props in Properties Panel
+- Configure component variants (Button: variant/size, Card: title/description, Input: placeholder)
+- Undo/Redo with keyboard shortcuts
 - Delete and duplicate nodes
+- Canvas zoom (25% - 400%)
+- Dark/Light mode toggle
+- Export canvas as PNG image
+- Save/Load designs as JSON files
 - Smooth animations powered by Motion
-- Real-time drag preview
-
-## Who is it for
-
-- PMs and planners who need to show UI flows quickly
-- Designers who want a fast starting point
-- Non-technical founders who need a prototype for validation
 
 ## Getting Started
 
@@ -43,6 +41,8 @@ packages/editor-react    # React renderer with dnd-kit and motion
 - Motion for animations
 - shadcn/ui components
 - Tailwind CSS v4
+- html-to-image for PNG export
+- next-themes for dark mode
 
 ## Keyboard Shortcuts
 
@@ -57,19 +57,22 @@ packages/editor-react    # React renderer with dnd-kit and motion
 
 **Implemented**
 
-- Add components from palette to canvas
+- Add components from palette to canvas (Button, Card, Input)
 - Select and move components
-- Resize via drag handles
+- Resize via 8-direction drag handles
 - Edit position, size, and props in Properties Panel
+- Configure component variants via Select dropdowns
 - Delete and duplicate nodes
 - Undo/Redo
-- 3 component types: Button, Card, Input
+- Canvas zoom in/out with percentage display
+- Dark/Light mode toggle
+- PNG image export
+- JSON save/load
 
 **Planned**
 
 - Additional component types (Text, Container, Image, etc.)
-- Local storage persistence
-- Image export
+- Local storage auto-save
 - Templates
 
 ## License

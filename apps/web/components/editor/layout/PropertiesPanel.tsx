@@ -1,7 +1,14 @@
 "use client";
 
-import { useEditorContext } from "@shadcn-mini/editor-react";
+import { useEditorContext, COMPONENT_SCHEMAS, type PropSchema } from "@shadcn-mini/editor-react";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function PropertiesPanel() {
   const { selectedId, document, updateNode } = useEditorContext();
@@ -104,25 +111,47 @@ export function PropertiesPanel() {
           </div>
         </div>
 
-        {Object.keys(selectedNode.props).length > 0 && (
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">
-              Props
-            </label>
+        {(() => {
+          const schema = COMPONENT_SCHEMAS[selectedNode.type] ?? [];
+          if (schema.length === 0) return null;
+          return (
             <div className="space-y-2">
-              {Object.entries(selectedNode.props).map(([key, value]) => (
-                <div key={key}>
-                  <span className="text-xs text-muted-foreground">{key}</span>
-                  <Input
-                    value={String(value)}
-                    onChange={(e) => handlePropChange(key, e.target.value)}
-                    className="h-8 text-sm"
-                  />
-                </div>
-              ))}
+              <label className="text-xs font-medium text-muted-foreground">
+                Props
+              </label>
+              <div className="space-y-2">
+                {schema.map((prop: PropSchema) => (
+                  <div key={prop.key}>
+                    <span className="text-xs text-muted-foreground">{prop.label}</span>
+                    {prop.type === "select" && prop.options ? (
+                      <Select
+                        value={String(selectedNode.props[prop.key] ?? prop.defaultValue ?? "")}
+                        onValueChange={(value) => handlePropChange(prop.key, value)}
+                      >
+                        <SelectTrigger className="h-8 text-sm w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {prop.options.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        value={String(selectedNode.props[prop.key] ?? prop.defaultValue ?? "")}
+                        onChange={(e) => handlePropChange(prop.key, e.target.value)}
+                        className="h-8 text-sm"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </aside>
   );

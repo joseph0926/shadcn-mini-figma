@@ -25,7 +25,7 @@ export default function EditorPage() {
                 <Palette items={paletteItems} />
               </aside>
               <main className="flex-1 relative overflow-hidden">
-                <Canvas className="h-full bg-[linear-gradient(to_right,hsl(var(--editor-panel-border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--editor-panel-border))_1px,transparent_1px)] bg-[size:20px_20px]" />
+                <Canvas className="h-full bg-[radial-gradient(circle,hsl(var(--editor-grid))_1px,transparent_1px)] bg-size-[20px_20px]" />
               </main>
               <PropertiesPanel />
             </div>

@@ -3,6 +3,7 @@ import type { Size, Position } from "@shadcn-mini/editor-core";
 
 export interface ResizeHandlesProps {
   size: Size;
+  zoom?: number;
   onResize: (newSize: Size, positionDelta: Position) => void;
 }
 
@@ -21,7 +22,7 @@ const handlePositions: Record<HandlePosition, React.CSSProperties> = {
   w: { top: "50%", left: -HANDLE_SIZE / 2, marginTop: -HANDLE_SIZE / 2, cursor: "ew-resize" },
 };
 
-export function ResizeHandles({ size, onResize }: ResizeHandlesProps) {
+export function ResizeHandles({ size, zoom = 1, onResize }: ResizeHandlesProps) {
   const handleMouseDown = useCallback(
     (handle: HandlePosition) => (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -33,8 +34,8 @@ export function ResizeHandles({ size, onResize }: ResizeHandlesProps) {
       const startHeight = size.height;
 
       const handleMouseMove = (moveE: MouseEvent) => {
-        const dx = moveE.clientX - startX;
-        const dy = moveE.clientY - startY;
+        const dx = (moveE.clientX - startX) / zoom;
+        const dy = (moveE.clientY - startY) / zoom;
 
         let newWidth = startWidth;
         let newHeight = startHeight;
@@ -73,7 +74,7 @@ export function ResizeHandles({ size, onResize }: ResizeHandlesProps) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     },
-    [size, onResize]
+    [size, zoom, onResize]
   );
 
   return (

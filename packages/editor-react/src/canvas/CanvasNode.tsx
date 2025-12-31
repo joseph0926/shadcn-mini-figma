@@ -13,7 +13,7 @@ export interface CanvasNodeProps {
 }
 
 export function CanvasNode({ nodeId }: CanvasNodeProps) {
-  const { document, selectedId, selectNode, updateNode, moveNode } = useEditorContext();
+  const { document, selectedId, selectNode, updateNode, moveNode, zoom } = useEditorContext();
   const registry = useRendererRegistry();
   const node = document.nodes[nodeId];
 
@@ -50,6 +50,8 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
         position: "absolute",
         left: node.position.x,
         top: node.position.y,
+        width: node.size.width,
+        height: node.size.height,
         transform: CSS.Translate.toString(transform),
       }}
       initial={{ opacity: 0, scale: 0.95 }}
@@ -83,7 +85,7 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
             }}
             layoutId={`selection-${nodeId}`}
           />
-          <ResizeHandles size={node.size} onResize={handleResize} />
+          <ResizeHandles size={node.size} zoom={zoom} onResize={handleResize} />
         </>
       )}
       {Renderer ? <Renderer node={node} isSelected={isSelected} /> : null}

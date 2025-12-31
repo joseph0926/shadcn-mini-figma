@@ -18,3 +18,5 @@ export type {
 
 export { DEFAULT_SCHEMA_VERSION, createDocumentState, applyCommand } from "./state";
 export type { CreateDocumentOptions } from "./state";
+
+export { serializeDocument, deserializeDocument } from "./serialization";

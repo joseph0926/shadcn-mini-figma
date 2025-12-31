@@ -8,8 +8,10 @@ export type {
   DraggableData,
   DroppableData,
   PaletteItem,
+  PropSchema,
+  PropSchemaOption,
 } from "./editor-types";
-export { DEFAULT_SIZES, DEFAULT_PROPS } from "./editor-types";
+export { DEFAULT_SIZES, DEFAULT_PROPS, COMPONENT_SCHEMAS } from "./editor-types";
 
 export { useEditor } from "./hooks/useEditor";
 export type { UseEditorReturn } from "./hooks/useEditor";
