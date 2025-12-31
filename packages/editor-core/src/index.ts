@@ -6,6 +6,8 @@ export type {
   UpdateNodeCommand,
   DeleteNodeCommand,
   DuplicateNodeCommand,
+  ReorderNodeCommand,
+  ReorderDirection,
 } from "./commands";
 
 export type {

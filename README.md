@@ -9,6 +9,8 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Select, move, and resize components via 8-direction handles
 - Multi-selection with Shift/Cmd/Ctrl+Click
 - Group/Ungroup nodes with proportional scaling on resize
+- Layer ordering: Bring Forward, Send Backward, Bring to Front, Send to Back
+- Right-click context menu for quick actions
 - Nesting: drag nodes into containers (Group, Card) to create parent-child hierarchy
 - Layers panel drag-and-drop to rearrange hierarchy
 - Copy/Paste/Cut with keyboard shortcuts
@@ -67,6 +69,10 @@ packages/editor-react    # React renderer with dnd-kit and motion
 | Ctrl+D (Cmd+D)             | Duplicate selected node(s) |
 | Ctrl+G (Cmd+G)             | Group selected nodes       |
 | Ctrl+Shift+G (Cmd+Shift+G) | Ungroup selected group     |
+| Ctrl+] (Cmd+])             | Bring forward              |
+| Ctrl+[ (Cmd+[)             | Send backward              |
+| Ctrl+Shift+] (Cmd+Shift+]) | Bring to front             |
+| Ctrl+Shift+[ (Cmd+Shift+[) | Send to back               |
 | Ctrl+A (Cmd+A)             | Select all nodes           |
 | Escape                     | Exit group / Clear selection |
 | Ctrl+Z (Cmd+Z)             | Undo                       |

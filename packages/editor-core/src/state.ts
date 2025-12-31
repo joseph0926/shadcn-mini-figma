@@ -1,4 +1,4 @@
-import type { Command } from "./commands";
+import type { Command, ReorderDirection } from "./commands";
 import type { DocumentState, NodeBase, NodeId, Position } from "./types";
 
 export const DEFAULT_SCHEMA_VERSION = 1;
@@ -56,6 +56,8 @@ export function applyCommand(
       return applyGroup(state, command.nodeIds, command.groupId);
     case "ungroup":
       return applyUngroup(state, command.groupId);
+    case "reorder":
+      return applyReorder(state, command.nodeIds, command.direction);
     default:
       return state;
   }
@@ -317,7 +319,18 @@ function applyGroup(
   const validNodeIds = nodeIds.filter((id) => state.nodes[id] && id !== state.rootId);
   if (validNodeIds.length < 2) return state;
 
-  const bounds = calculateBoundingBox(state.nodes, validNodeIds);
+  const firstNodeId = validNodeIds[0];
+  const commonParentId = findParentId(state.nodes, firstNodeId) ?? state.rootId;
+  const parentChildren = state.nodes[commonParentId]?.children ?? [];
+
+  const sortedNodeIds = [...validNodeIds].sort((a, b) => {
+    return parentChildren.indexOf(a) - parentChildren.indexOf(b);
+  });
+
+  const indices = sortedNodeIds.map((id) => parentChildren.indexOf(id)).filter((i) => i !== -1);
+  const maxIndex = indices.length > 0 ? Math.max(...indices) : parentChildren.length;
+
+  const bounds = calculateBoundingBox(state.nodes, sortedNodeIds);
 
   const groupNode: NodeBase = {
     id: groupId,
@@ -325,12 +338,12 @@ function applyGroup(
     position: { x: bounds.x, y: bounds.y },
     size: { width: bounds.width, height: bounds.height },
     props: {},
-    children: validNodeIds,
+    children: sortedNodeIds,
   };
 
   const nodes: Record<NodeId, NodeBase> = { ...state.nodes, [groupId]: groupNode };
 
-  for (const nodeId of validNodeIds) {
+  for (const nodeId of sortedNodeIds) {
     const parentId = findParentId(nodes, nodeId);
     if (parentId && nodes[parentId]) {
       const parent = nodes[parentId];
@@ -339,11 +352,11 @@ function applyGroup(
     }
   }
 
-  const root = nodes[state.rootId];
-  nodes[state.rootId] = {
-    ...root,
-    children: [...(root.children ?? []), groupId],
-  };
+  const parent = nodes[commonParentId];
+  const filteredChildren = (parent.children ?? []).filter((cid) => !sortedNodeIds.includes(cid));
+  const insertIndex = Math.min(maxIndex - (sortedNodeIds.length - 1), filteredChildren.length);
+  filteredChildren.splice(Math.max(0, insertIndex), 0, groupId);
+  nodes[commonParentId] = { ...parent, children: filteredChildren };
 
   return { ...state, nodes };
 }
@@ -368,6 +381,77 @@ function applyUngroup(state: DocumentState, groupId: NodeId): DocumentState {
   }
 
   nodes[parentId] = { ...parent, children: newChildren };
+
+  return { ...state, nodes };
+}
+
+function applyReorder(
+  state: DocumentState,
+  nodeIds: NodeId[],
+  direction: ReorderDirection
+): DocumentState {
+  if (nodeIds.length === 0) return state;
+
+  const nodes = { ...state.nodes };
+
+  const parentGroups = new Map<NodeId, NodeId[]>();
+  for (const nodeId of nodeIds) {
+    const parentId = findParentId(nodes, nodeId) ?? state.rootId;
+    const group = parentGroups.get(parentId) ?? [];
+    group.push(nodeId);
+    parentGroups.set(parentId, group);
+  }
+
+  for (const [parentId, childNodeIds] of parentGroups) {
+    const parent = nodes[parentId];
+    if (!parent?.children) continue;
+
+    const children = [...parent.children];
+
+    const indices = childNodeIds
+      .map((id) => children.indexOf(id))
+      .filter((i) => i !== -1)
+      .sort((a, b) => a - b);
+
+    if (indices.length === 0) continue;
+
+    switch (direction) {
+      case "forward": {
+        for (let i = indices.length - 1; i >= 0; i--) {
+          const idx = indices[i];
+          if (idx < children.length - 1) {
+            [children[idx], children[idx + 1]] = [children[idx + 1], children[idx]];
+          }
+        }
+        break;
+      }
+      case "backward": {
+        for (let i = 0; i < indices.length; i++) {
+          const idx = indices[i];
+          if (idx > 0) {
+            [children[idx], children[idx - 1]] = [children[idx - 1], children[idx]];
+          }
+        }
+        break;
+      }
+      case "front": {
+        const selected = childNodeIds.filter((id) => children.includes(id));
+        const others = children.filter((id) => !childNodeIds.includes(id));
+        children.length = 0;
+        children.push(...others, ...selected);
+        break;
+      }
+      case "back": {
+        const selected = childNodeIds.filter((id) => children.includes(id));
+        const others = children.filter((id) => !childNodeIds.includes(id));
+        children.length = 0;
+        children.push(...selected, ...others);
+        break;
+      }
+    }
+
+    nodes[parentId] = { ...parent, children };
+  }
 
   return { ...state, nodes };
 }

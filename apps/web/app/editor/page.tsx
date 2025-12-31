@@ -16,6 +16,7 @@ import { EditorHeader } from "@/components/editor/layout/EditorHeader";
 import { EditorFooter } from "@/components/editor/layout/EditorFooter";
 import { PropertiesPanel } from "@/components/editor/layout/PropertiesPanel";
 import { LayersPanel } from "@/components/editor/layout/LayersPanel";
+import { CanvasContextMenu } from "@/components/editor/canvas/CanvasContextMenu";
 import { Button } from "@/components/ui/button";
 import { OnboardingTooltip } from "@/components/editor/onboarding/OnboardingTooltip";
 import { useOnboarding } from "@/components/editor/onboarding/useOnboarding";
@@ -78,7 +79,9 @@ export default function EditorPage() {
                   )}
                 </Button>
                 <main className="flex-1 relative overflow-hidden">
-                  <Canvas className="h-full bg-[radial-gradient(circle,hsl(var(--editor-grid))_1px,transparent_1px)] bg-size-[20px_20px]" />
+                  <CanvasContextMenu>
+                    <Canvas className="h-full bg-[radial-gradient(circle,hsl(var(--editor-grid))_1px,transparent_1px)] bg-size-[20px_20px]" />
+                  </CanvasContextMenu>
                 </main>
                 <Button
                   variant="ghost"

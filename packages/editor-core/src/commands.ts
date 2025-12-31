@@ -1,6 +1,8 @@
 import type { NodeBase, NodeId, Position } from "./types";
 
-export type CommandType = "add" | "move" | "update" | "delete" | "duplicate" | "group" | "ungroup";
+export type CommandType = "add" | "move" | "update" | "delete" | "duplicate" | "group" | "ungroup" | "reorder";
+
+export type ReorderDirection = "forward" | "backward" | "front" | "back";
 
 export interface AddNodeCommand {
   type: "add";
@@ -47,6 +49,12 @@ export interface UngroupNodeCommand {
   groupId: NodeId;
 }
 
+export interface ReorderNodeCommand {
+  type: "reorder";
+  nodeIds: NodeId[];
+  direction: ReorderDirection;
+}
+
 export type Command =
   | AddNodeCommand
   | MoveNodeCommand
@@ -54,4 +62,5 @@ export type Command =
   | DeleteNodeCommand
   | DuplicateNodeCommand
   | GroupNodeCommand
-  | UngroupNodeCommand;
+  | UngroupNodeCommand
+  | ReorderNodeCommand;

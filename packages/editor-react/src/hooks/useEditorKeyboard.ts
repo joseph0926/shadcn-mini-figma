@@ -17,6 +17,10 @@ export function useEditorKeyboard() {
     ungroupSelectedNodes,
     editingGroupId,
     exitGroup,
+    bringForward,
+    sendBackward,
+    bringToFront,
+    sendToBack,
   } = useEditorContext();
 
   useEffect(() => {
@@ -82,6 +86,30 @@ export function useEditorKeyboard() {
         return;
       }
 
+      if ((e.ctrlKey || e.metaKey) && e.key === "]" && !e.shiftKey) {
+        e.preventDefault();
+        bringForward();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === "[" && !e.shiftKey) {
+        e.preventDefault();
+        sendBackward();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "}") {
+        e.preventDefault();
+        bringToFront();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "{") {
+        e.preventDefault();
+        sendToBack();
+        return;
+      }
+
       if (selectedIds.size === 0) return;
 
       if (e.key === "Delete" || e.key === "Backspace") {
@@ -97,5 +125,5 @@ export function useEditorKeyboard() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo, copySelectedNodes, pasteNodes, cutSelectedNodes, groupSelectedNodes, ungroupSelectedNodes, editingGroupId, exitGroup]);
+  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo, copySelectedNodes, pasteNodes, cutSelectedNodes, groupSelectedNodes, ungroupSelectedNodes, editingGroupId, exitGroup, bringForward, sendBackward, bringToFront, sendToBack]);
 }

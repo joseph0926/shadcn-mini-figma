@@ -64,6 +64,10 @@ export interface UseEditorReturn {
   exitGroup: () => void;
   reparentNode: (nodeId: NodeId, newParentId: NodeId, index?: number) => boolean;
   canDropOnNode: (nodeId: NodeId, targetId: NodeId) => boolean;
+  bringForward: () => void;
+  sendBackward: () => void;
+  bringToFront: () => void;
+  sendToBack: () => void;
 }
 
 export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
@@ -449,6 +453,42 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     [dispatch, canDropOnNode]
   );
 
+  const bringForward = useCallback(() => {
+    if (selectedIdsState.size === 0) return;
+    dispatch({
+      type: "reorder",
+      nodeIds: Array.from(selectedIdsState),
+      direction: "forward",
+    });
+  }, [dispatch, selectedIdsState]);
+
+  const sendBackward = useCallback(() => {
+    if (selectedIdsState.size === 0) return;
+    dispatch({
+      type: "reorder",
+      nodeIds: Array.from(selectedIdsState),
+      direction: "backward",
+    });
+  }, [dispatch, selectedIdsState]);
+
+  const bringToFront = useCallback(() => {
+    if (selectedIdsState.size === 0) return;
+    dispatch({
+      type: "reorder",
+      nodeIds: Array.from(selectedIdsState),
+      direction: "front",
+    });
+  }, [dispatch, selectedIdsState]);
+
+  const sendToBack = useCallback(() => {
+    if (selectedIdsState.size === 0) return;
+    dispatch({
+      type: "reorder",
+      nodeIds: Array.from(selectedIdsState),
+      direction: "back",
+    });
+  }, [dispatch, selectedIdsState]);
+
   return {
     document,
     selectedId,
@@ -495,5 +535,9 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     exitGroup,
     reparentNode,
     canDropOnNode,
+    bringForward,
+    sendBackward,
+    bringToFront,
+    sendToBack,
   };
 }
