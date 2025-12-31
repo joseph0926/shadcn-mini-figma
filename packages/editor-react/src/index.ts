@@ -5,6 +5,7 @@ export type { RendererProps } from "./renderer";
 export type {
   EditorState,
   EditorActions,
+  SelectOptions,
   DraggableData,
   DroppableData,
   PaletteItem,
@@ -17,6 +18,9 @@ export { useEditor } from "./hooks/useEditor";
 export type { UseEditorReturn } from "./hooks/useEditor";
 
 export { useEditorKeyboard } from "./hooks/useEditorKeyboard";
+
+export { useSnapping } from "./hooks/useSnapping";
+export type { Guide, SnapResult } from "./hooks/useSnapping";
 
 export { EditorProvider, useEditorContext } from "./context/EditorContext";
 export type { EditorProviderProps } from "./context/EditorContext";
@@ -38,3 +42,6 @@ export type { DragPreviewProps } from "./canvas/DragPreview";
 
 export { Palette } from "./palette/Palette";
 export type { PaletteProps } from "./palette/Palette";
+
+export { Guidelines } from "./canvas/Guidelines";
+export type { GuidelinesProps } from "./canvas/Guidelines";

@@ -1,18 +1,29 @@
 import type { DocumentState, NodeId, NodeBase, Position } from "@shadcn-mini/editor-core";
 import type { ReactNode } from "react";
 
+export interface SelectOptions {
+  addToSelection?: boolean;
+}
+
 export interface EditorState {
   document: DocumentState;
   selectedId: NodeId | null;
+  selectedIds: Set<NodeId>;
 }
 
 export interface EditorActions {
   addNode: (type: string, position: Position) => NodeId;
-  selectNode: (id: NodeId | null) => void;
+  selectNode: (id: NodeId | null, options?: SelectOptions) => void;
+  selectNodes: (ids: NodeId[]) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
   moveNode: (id: NodeId, delta: Position) => void;
+  moveSelectedNodes: (delta: Position) => void;
   updateNode: (id: NodeId, patch: Partial<Omit<NodeBase, "id">>) => void;
   deleteNode: (id: NodeId) => void;
+  deleteSelectedNodes: () => void;
   duplicateNode: (id: NodeId) => NodeId;
+  duplicateSelectedNodes: () => NodeId[];
   undo: () => void;
   redo: () => void;
   canUndo: boolean;

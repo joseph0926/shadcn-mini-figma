@@ -16,17 +16,17 @@ export function DragPreview({ data, document, registry }: DragPreviewProps) {
 
     return (
       <div
+        className="bg-editor-selection-bg border-editor-selection text-editor-selection"
         style={{
           width: size.width,
           height: size.height,
-          backgroundColor: "hsl(217, 91%, 97%)",
-          border: "2px solid hsl(217, 91%, 60%)",
+          borderWidth: "2px",
+          borderStyle: "solid",
           borderRadius: "6px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "12px",
-          color: "hsl(217, 91%, 40%)",
           fontWeight: 500,
           boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
           opacity: 0.9,
@@ -45,11 +45,13 @@ export function DragPreview({ data, document, registry }: DragPreviewProps) {
 
     return (
       <div
+        className="outline-editor-selection"
         style={{
           opacity: 0.9,
           boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
           borderRadius: "6px",
-          outline: "2px solid hsl(217, 91%, 60%)",
+          outlineWidth: "2px",
+          outlineStyle: "solid",
           outlineOffset: "2px",
         }}
       >

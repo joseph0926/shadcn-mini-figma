@@ -13,7 +13,7 @@ export interface CanvasNodeProps {
 }
 
 export function CanvasNode({ nodeId }: CanvasNodeProps) {
-  const { document, selectedId, selectNode, updateNode, moveNode, zoom } = useEditorContext();
+  const { document, selectedIds, selectNode, updateNode, moveNode, zoom } = useEditorContext();
   const registry = useRendererRegistry();
   const node = document.nodes[nodeId];
 
@@ -35,12 +35,12 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
 
   if (!node) return null;
 
-  const isSelected = selectedId === nodeId;
+  const isSelected = selectedIds.has(nodeId);
   const Renderer = registry[node.type];
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    selectNode(nodeId);
+    selectNode(nodeId, { addToSelection: e.shiftKey || e.metaKey || e.ctrlKey });
   };
 
   return (
@@ -76,11 +76,12 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
       {isSelected && (
         <>
           <motion.div
-            className="absolute inset-0 pointer-events-none rounded-md"
+            className="absolute inset-0 pointer-events-none rounded-md outline-editor-selection"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{
-              outline: "2px solid hsl(217, 91%, 60%)",
+              outlineWidth: "2px",
+              outlineStyle: "solid",
               outlineOffset: "2px",
             }}
             layoutId={`selection-${nodeId}`}

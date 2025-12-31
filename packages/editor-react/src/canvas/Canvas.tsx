@@ -46,7 +46,7 @@ export function Canvas({ className }: CanvasProps) {
         overflow: "hidden",
       }}
       animate={{
-        backgroundColor: isOver ? "hsl(217, 91%, 97%)" : "transparent",
+        backgroundColor: isOver ? "hsl(var(--editor-selection-bg))" : "transparent",
       }}
       transition={{ duration: 0.15 }}
       onClick={handleCanvasClick}
@@ -54,8 +54,7 @@ export function Canvas({ className }: CanvasProps) {
       <AnimatePresence>
         {isOver && (
           <motion.div
-            className="absolute inset-4 border-2 border-dashed rounded-lg pointer-events-none"
-            style={{ borderColor: "hsl(217, 91%, 60%)" }}
+            className="absolute inset-4 border-2 border-dashed rounded-lg pointer-events-none border-editor-selection"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

@@ -18,7 +18,7 @@ export interface DndProviderProps {
 }
 
 export function DndProvider({ children }: DndProviderProps) {
-  const { document, addNode, moveNode } = useEditorContext();
+  const { document, addNode, moveNode, selectedIds, moveSelectedNodes } = useEditorContext();
   const registry = useRendererRegistry();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeData, setActiveData] = useState<DraggableData | null>(null);
@@ -55,7 +55,11 @@ export function DndProvider({ children }: DndProviderProps) {
       };
       addNode(data.nodeType, position);
     } else if (data.type === "canvas-node") {
-      moveNode(data.nodeId, { x: delta.x, y: delta.y });
+      if (selectedIds.has(data.nodeId) && selectedIds.size > 1) {
+        moveSelectedNodes({ x: delta.x, y: delta.y });
+      } else {
+        moveNode(data.nodeId, { x: delta.x, y: delta.y });
+      }
     }
   };
 

@@ -2,7 +2,15 @@ import { useEffect } from "react";
 import { useEditorContext } from "../context/EditorContext";
 
 export function useEditorKeyboard() {
-  const { selectedId, deleteNode, duplicateNode, undo, redo } = useEditorContext();
+  const {
+    selectedIds,
+    deleteSelectedNodes,
+    duplicateSelectedNodes,
+    selectAll,
+    clearSelection,
+    undo,
+    redo,
+  } = useEditorContext();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -21,20 +29,32 @@ export function useEditorKeyboard() {
         return;
       }
 
-      if (!selectedId) return;
+      if ((e.ctrlKey || e.metaKey) && e.key === "a") {
+        e.preventDefault();
+        selectAll();
+        return;
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        clearSelection();
+        return;
+      }
+
+      if (selectedIds.size === 0) return;
 
       if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
-        deleteNode(selectedId);
+        deleteSelectedNodes();
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key === "d") {
         e.preventDefault();
-        duplicateNode(selectedId);
+        duplicateSelectedNodes();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedId, deleteNode, duplicateNode, undo, redo]);
+  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo]);
 }

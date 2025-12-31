@@ -82,11 +82,11 @@ export function ResizeHandles({ size, zoom = 1, onResize }: ResizeHandlesProps) 
       {(Object.keys(handlePositions) as HandlePosition[]).map((pos) => (
         <div
           key={pos}
+          className="bg-editor-selection"
           style={{
             position: "absolute",
             width: HANDLE_SIZE,
             height: HANDLE_SIZE,
-            backgroundColor: "hsl(217, 91%, 60%)",
             border: "1px solid white",
             borderRadius: 2,
             ...handlePositions[pos],

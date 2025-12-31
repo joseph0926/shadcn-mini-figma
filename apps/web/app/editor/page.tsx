@@ -12,6 +12,7 @@ import { paletteItems } from "@/components/editor/palette-items";
 import { EditorHeader } from "@/components/editor/layout/EditorHeader";
 import { EditorFooter } from "@/components/editor/layout/EditorFooter";
 import { PropertiesPanel } from "@/components/editor/layout/PropertiesPanel";
+import { LayersPanel } from "@/components/editor/layout/LayersPanel";
 
 export default function EditorPage() {
   return (
@@ -27,6 +28,7 @@ export default function EditorPage() {
               <main className="flex-1 relative overflow-hidden">
                 <Canvas className="h-full bg-[radial-gradient(circle,hsl(var(--editor-grid))_1px,transparent_1px)] bg-size-[20px_20px]" />
               </main>
+              <LayersPanel />
               <PropertiesPanel />
             </div>
             <EditorFooter />

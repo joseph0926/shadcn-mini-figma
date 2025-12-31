@@ -20,3 +20,6 @@ export { DEFAULT_SCHEMA_VERSION, createDocumentState, applyCommand } from "./sta
 export type { CreateDocumentOptions } from "./state";
 
 export { serializeDocument, deserializeDocument } from "./serialization";
+
+export { alignNodes, distributeNodes } from "./alignment";
+export type { AlignmentType, DistributionType } from "./alignment";

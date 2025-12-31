@@ -1,16 +1,36 @@
 "use client";
 
-import { useRef } from "react";
-import { Undo2, Redo2, Eye, Download, Sun, Moon, Save, Upload } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import {
+  Undo2,
+  Redo2,
+  Eye,
+  Download,
+  Sun,
+  Moon,
+  Save,
+  Upload,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignStartVertical,
+  AlignCenterVertical,
+  AlignEndVertical,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEditorContext } from "@shadcn-mini/editor-react";
 import { Button } from "@/components/ui/button";
 import { exportCanvasToPng, downloadDataUrl } from "@/lib/export";
 
 export function EditorHeader() {
-  const { undo, redo, canUndo, canRedo, saveDocument, loadDocument } = useEditorContext();
+  const { undo, redo, canUndo, canRedo, saveDocument, loadDocument, selectedIds, alignSelection } = useEditorContext();
   const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleExport = async () => {
     const canvas = document.querySelector("[data-canvas]") as HTMLElement;
@@ -83,6 +103,67 @@ export function EditorHeader() {
           <Redo2 className="h-4 w-4" />
         </Button>
         <div className="w-px h-4 bg-border mx-1" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => alignSelection("left")}
+          disabled={selectedIds.size < 2}
+          title="Align Left"
+        >
+          <AlignLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => alignSelection("center")}
+          disabled={selectedIds.size < 2}
+          title="Align Center"
+        >
+          <AlignCenter className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => alignSelection("right")}
+          disabled={selectedIds.size < 2}
+          title="Align Right"
+        >
+          <AlignRight className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => alignSelection("top")}
+          disabled={selectedIds.size < 2}
+          title="Align Top"
+        >
+          <AlignStartVertical className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => alignSelection("middle")}
+          disabled={selectedIds.size < 2}
+          title="Align Middle"
+        >
+          <AlignCenterVertical className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => alignSelection("bottom")}
+          disabled={selectedIds.size < 2}
+          title="Align Bottom"
+        >
+          <AlignEndVertical className="h-4 w-4" />
+        </Button>
+        <div className="w-px h-4 bg-border mx-1" />
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSave}>
           <Save className="h-4 w-4" />
         </Button>
@@ -110,10 +191,10 @@ export function EditorHeader() {
           className="h-8 w-8"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          {theme === "dark" ? (
-            <Sun className="h-4 w-4" />
+          {mounted ? (
+            theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />
           ) : (
-            <Moon className="h-4 w-4" />
+            <div className="h-4 w-4" />
           )}
         </Button>
       </div>

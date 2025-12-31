@@ -1,25 +1,38 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   type DocumentState,
   type NodeId,
   type NodeBase,
   type Position,
+  type AlignmentType,
+  type DistributionType,
   serializeDocument,
   deserializeDocument,
+  alignNodes,
+  distributeNodes,
 } from "@shadcn-mini/editor-core";
 import { nanoid } from "nanoid";
 import { useEditorHistory } from "./useEditorHistory";
-import { DEFAULT_SIZES, DEFAULT_PROPS } from "../editor-types";
+import { DEFAULT_SIZES, DEFAULT_PROPS, type SelectOptions } from "../editor-types";
 
 export interface UseEditorReturn {
   document: DocumentState;
   selectedId: NodeId | null;
+  selectedIds: Set<NodeId>;
   addNode: (type: string, position: Position) => NodeId;
-  selectNode: (id: NodeId | null) => void;
+  selectNode: (id: NodeId | null, options?: SelectOptions) => void;
+  selectNodes: (ids: NodeId[]) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
   moveNode: (id: NodeId, delta: Position) => void;
+  moveSelectedNodes: (delta: Position) => void;
   updateNode: (id: NodeId, patch: Partial<Omit<NodeBase, "id">>) => void;
   deleteNode: (id: NodeId) => void;
+  deleteSelectedNodes: () => void;
   duplicateNode: (id: NodeId) => NodeId;
+  duplicateSelectedNodes: () => NodeId[];
+  alignSelection: (type: AlignmentType) => void;
+  distributeSelection: (type: DistributionType) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -35,8 +48,13 @@ export interface UseEditorReturn {
 export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
   const { document, dispatch, undo, redo, reset, canUndo, canRedo } =
     useEditorHistory(initialDocument);
-  const [selectedId, setSelectedId] = useState<NodeId | null>(null);
+  const [selectedIdsState, setSelectedIdsState] = useState<Set<NodeId>>(new Set());
   const [zoom, setZoomState] = useState(1);
+
+  const selectedId = useMemo(() => {
+    const arr = Array.from(selectedIdsState);
+    return arr.length > 0 ? arr[0] : null;
+  }, [selectedIdsState]);
 
   const setZoom = useCallback((z: number) => {
     setZoomState(Math.max(0.25, Math.min(4, z)));
@@ -63,14 +81,44 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
           props: DEFAULT_PROPS[type] ?? {},
         },
       });
-      setSelectedId(id);
+      setSelectedIdsState(new Set([id]));
       return id;
     },
     [dispatch]
   );
 
-  const selectNode = useCallback((id: NodeId | null) => {
-    setSelectedId(id);
+  const selectNode = useCallback((id: NodeId | null, options?: SelectOptions) => {
+    if (id === null) {
+      setSelectedIdsState(new Set());
+      return;
+    }
+    if (options?.addToSelection) {
+      setSelectedIdsState((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) {
+          next.delete(id);
+        } else {
+          next.add(id);
+        }
+        return next;
+      });
+    } else {
+      setSelectedIdsState(new Set([id]));
+    }
+  }, []);
+
+  const selectNodes = useCallback((ids: NodeId[]) => {
+    setSelectedIdsState(new Set(ids));
+  }, []);
+
+  const selectAll = useCallback(() => {
+    const rootNode = document.nodes[document.rootId];
+    const childIds = rootNode?.children ?? [];
+    setSelectedIdsState(new Set(childIds));
+  }, [document]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedIdsState(new Set());
   }, []);
 
   const moveNode = useCallback(
@@ -82,6 +130,19 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
       });
     },
     [dispatch]
+  );
+
+  const moveSelectedNodes = useCallback(
+    (delta: Position) => {
+      for (const id of selectedIdsState) {
+        dispatch({
+          type: "move",
+          id,
+          delta,
+        });
+      }
+    },
+    [dispatch, selectedIdsState]
   );
 
   const updateNode = useCallback(
@@ -101,10 +162,24 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
         type: "delete",
         id,
       });
-      setSelectedId((prev) => (prev === id ? null : prev));
+      setSelectedIdsState((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     },
     [dispatch]
   );
+
+  const deleteSelectedNodes = useCallback(() => {
+    for (const id of selectedIdsState) {
+      dispatch({
+        type: "delete",
+        id,
+      });
+    }
+    setSelectedIdsState(new Set());
+  }, [dispatch, selectedIdsState]);
 
   const duplicateNode = useCallback(
     (id: NodeId): NodeId => {
@@ -122,10 +197,63 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
           y: node.position.y + offset.y,
         },
       });
-      setSelectedId(newId);
+      setSelectedIdsState(new Set([newId]));
       return newId;
     },
     [dispatch, document.nodes]
+  );
+
+  const duplicateSelectedNodes = useCallback((): NodeId[] => {
+    const newIds: NodeId[] = [];
+    for (const id of selectedIdsState) {
+      const newId = nanoid();
+      const node = document.nodes[id];
+      if (!node) continue;
+
+      const offset = { x: 20, y: 20 };
+      dispatch({
+        type: "duplicate",
+        id,
+        newId,
+        position: {
+          x: node.position.x + offset.x,
+          y: node.position.y + offset.y,
+        },
+      });
+      newIds.push(newId);
+    }
+    setSelectedIdsState(new Set(newIds));
+    return newIds;
+  }, [dispatch, selectedIdsState, document.nodes]);
+
+  const alignSelection = useCallback(
+    (type: AlignmentType) => {
+      const nodes = Array.from(selectedIdsState)
+        .map((id) => document.nodes[id])
+        .filter(Boolean) as NodeBase[];
+      if (nodes.length < 2) return;
+
+      const positions = alignNodes(nodes, type);
+      for (const [id, position] of positions) {
+        dispatch({ type: "move", id, position });
+      }
+    },
+    [dispatch, selectedIdsState, document.nodes]
+  );
+
+  const distributeSelection = useCallback(
+    (type: DistributionType) => {
+      const nodes = Array.from(selectedIdsState)
+        .map((id) => document.nodes[id])
+        .filter(Boolean) as NodeBase[];
+      if (nodes.length < 3) return;
+
+      const positions = distributeNodes(nodes, type);
+      for (const [id, position] of positions) {
+        dispatch({ type: "move", id, position });
+      }
+    },
+    [dispatch, selectedIdsState, document.nodes]
   );
 
   const saveDocument = useCallback(() => {
@@ -136,7 +264,7 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     (json: string) => {
       const doc = deserializeDocument(json);
       reset(doc);
-      setSelectedId(null);
+      setSelectedIdsState(new Set());
     },
     [reset]
   );
@@ -144,12 +272,21 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
   return {
     document,
     selectedId,
+    selectedIds: selectedIdsState,
     addNode,
     selectNode,
+    selectNodes,
+    selectAll,
+    clearSelection,
     moveNode,
+    moveSelectedNodes,
     updateNode,
     deleteNode,
+    deleteSelectedNodes,
     duplicateNode,
+    duplicateSelectedNodes,
+    alignSelection,
+    distributeSelection,
     undo,
     redo,
     canUndo,

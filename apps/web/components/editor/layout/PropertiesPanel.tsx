@@ -120,34 +120,38 @@ export function PropertiesPanel() {
                 Props
               </label>
               <div className="space-y-2">
-                {schema.map((prop: PropSchema) => (
-                  <div key={prop.key}>
-                    <span className="text-xs text-muted-foreground">{prop.label}</span>
-                    {prop.type === "select" && prop.options ? (
-                      <Select
-                        value={String(selectedNode.props[prop.key] ?? prop.defaultValue ?? "")}
-                        onValueChange={(value) => handlePropChange(prop.key, value)}
-                      >
-                        <SelectTrigger className="h-8 text-sm w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {prop.options.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Input
-                        value={String(selectedNode.props[prop.key] ?? prop.defaultValue ?? "")}
-                        onChange={(e) => handlePropChange(prop.key, e.target.value)}
-                        className="h-8 text-sm"
-                      />
-                    )}
-                  </div>
-                ))}
+                {schema.map((prop: PropSchema) => {
+                  const currentValue = (selectedNode.props[prop.key] as string) || (prop.defaultValue as string) || "";
+                  return (
+                    <div key={prop.key}>
+                      <span className="text-xs text-muted-foreground">{prop.label}</span>
+                      {prop.type === "select" && prop.options ? (
+                        <Select
+                          key={`${selectedId}-${prop.key}`}
+                          value={currentValue}
+                          onValueChange={(value) => handlePropChange(prop.key, value)}
+                        >
+                          <SelectTrigger className="h-8 text-sm w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {prop.options.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={currentValue}
+                          onChange={(e) => handlePropChange(prop.key, e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
