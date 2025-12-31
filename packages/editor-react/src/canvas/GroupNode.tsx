@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Lock, FolderOpen } from "lucide-react";
 import type { NodeId, Size, Position } from "@shadcn-mini/editor-core";
 import { useEditorContext } from "../context/EditorContext";
+import { useDropTarget } from "../context/DndProvider";
 import { ResizeHandles } from "./ResizeHandles";
 import { CanvasNode } from "./CanvasNode";
 import type { DraggableData } from "../editor-types";
@@ -24,11 +25,13 @@ export function GroupNode({ nodeId }: GroupNodeProps) {
     enterGroup,
     editingGroupId,
   } = useEditorContext();
+  const dropTargetId = useDropTarget();
   const node = document.nodes[nodeId];
   const [isResizing, setIsResizing] = useState(false);
 
   const isLocked = node?.locked === true;
   const isEditing = editingGroupId === nodeId;
+  const isDropTarget = dropTargetId === nodeId;
 
   const moveNodeWithChildren = useCallback(
     (id: NodeId, delta: Position) => {
@@ -190,6 +193,10 @@ export function GroupNode({ nodeId }: GroupNodeProps) {
         <div className="absolute -top-2 -right-2 bg-muted rounded-full p-0.5 shadow-sm border border-border">
           <Lock className="h-3 w-3 text-muted-foreground" />
         </div>
+      )}
+
+      {isDropTarget && (
+        <div className="absolute inset-0 border-2 border-dashed border-blue-500 bg-blue-500/10 pointer-events-none rounded-md z-50" />
       )}
 
       <div

@@ -14,6 +14,14 @@ export type {
   Size,
   NodeBase,
   DocumentState,
+  ContainerType,
+} from "./types";
+
+export {
+  CONTAINER_TYPES,
+  isContainerType,
+  findParentId,
+  isDescendantOf,
 } from "./types";
 
 export { DEFAULT_SCHEMA_VERSION, createDocumentState, applyCommand } from "./state";

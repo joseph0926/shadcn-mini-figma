@@ -9,6 +9,8 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Select, move, and resize components via 8-direction handles
 - Multi-selection with Shift/Cmd/Ctrl+Click
 - Group/Ungroup nodes with proportional scaling on resize
+- Nesting: drag nodes into containers (Group, Card) to create parent-child hierarchy
+- Layers panel drag-and-drop to rearrange hierarchy
 - Copy/Paste/Cut with keyboard shortcuts
 - Node locking (prevent move/resize/delete)
 - Snap-to-grid with configurable grid size (8/16/32px)

@@ -10,6 +10,9 @@ import {
   deserializeDocument,
   alignNodes,
   distributeNodes,
+  findParentId,
+  isDescendantOf,
+  isContainerType,
 } from "@shadcn-mini/editor-core";
 import { nanoid } from "nanoid";
 import { useEditorHistory } from "./useEditorHistory";
@@ -59,6 +62,8 @@ export interface UseEditorReturn {
   editingGroupId: NodeId | null;
   enterGroup: (groupId: NodeId) => void;
   exitGroup: () => void;
+  reparentNode: (nodeId: NodeId, newParentId: NodeId, index?: number) => boolean;
+  canDropOnNode: (nodeId: NodeId, targetId: NodeId) => boolean;
 }
 
 export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
@@ -417,6 +422,33 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     setSelectedIdsState(new Set());
   }, []);
 
+  const canDropOnNode = useCallback(
+    (nodeId: NodeId, targetId: NodeId): boolean => {
+      if (nodeId === targetId) return false;
+      const targetNode = document.nodes[targetId];
+      if (!targetNode) return false;
+      if (!isContainerType(targetNode.type)) return false;
+      if (targetNode.locked) return false;
+      if (isDescendantOf(document.nodes, nodeId, targetId)) return false;
+      return true;
+    },
+    [document.nodes]
+  );
+
+  const reparentNode = useCallback(
+    (nodeId: NodeId, newParentId: NodeId, index?: number): boolean => {
+      if (!canDropOnNode(nodeId, newParentId)) return false;
+      dispatch({
+        type: "move",
+        id: nodeId,
+        parentId: newParentId,
+        index,
+      });
+      return true;
+    },
+    [dispatch, canDropOnNode]
+  );
+
   return {
     document,
     selectedId,
@@ -461,5 +493,7 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     editingGroupId,
     enterGroup,
     exitGroup,
+    reparentNode,
+    canDropOnNode,
   };
 }

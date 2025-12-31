@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "motion/react";
-import { Eye, EyeOff, ChevronRight, ChevronDown, Lock, Unlock, Folder, FolderOpen } from "lucide-react";
+import { useState, useRef } from "react";
+import { Eye, EyeOff, ChevronRight, ChevronDown, Lock, Unlock, Folder, FolderOpen, GripVertical } from "lucide-react";
 import { useEditorContext } from "@shadcn-mini/editor-react";
-import type { NodeId } from "@shadcn-mini/editor-core";
+import { type NodeId, isContainerType } from "@shadcn-mini/editor-core";
 import { Button } from "@/components/ui/button";
+
+type DropPosition = "before" | "inside" | "after" | null;
 
 interface LayerItemProps {
   nodeId: NodeId;
   depth?: number;
   index?: number;
+  parentId: NodeId;
 }
 
-function LayerItem({ nodeId, depth = 0, index = 0 }: LayerItemProps) {
-  const { document, selectedIds, selectNode, toggleVisibility, toggleLock, enterGroup, editingGroupId } = useEditorContext();
+function LayerItem({ nodeId, depth = 0, index = 0, parentId }: LayerItemProps) {
+  const { document, selectedIds, selectNode, toggleVisibility, toggleLock, enterGroup, editingGroupId, reparentNode } = useEditorContext();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [dropPosition, setDropPosition] = useState<DropPosition>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const itemRef = useRef<HTMLDivElement>(null);
 
   const node = document.nodes[nodeId];
   if (!node) return null;
@@ -24,7 +29,8 @@ function LayerItem({ nodeId, depth = 0, index = 0 }: LayerItemProps) {
   const isVisible = node.visible !== false;
   const isLocked = node.locked === true;
   const isGroup = node.type === "Group";
-  const hasChildren = isGroup && node.children && node.children.length > 0;
+  const isContainer = isContainerType(node.type);
+  const hasChildren = node.children && node.children.length > 0;
   const isEditing = editingGroupId === nodeId;
 
   const handleToggleExpand = (e: React.MouseEvent) => {
@@ -39,23 +45,99 @@ function LayerItem({ nodeId, depth = 0, index = 0 }: LayerItemProps) {
     }
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData("text/plain", nodeId);
+    e.dataTransfer.effectAllowed = "move";
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDropPosition(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!itemRef.current) return;
+
+    const rect = itemRef.current.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const percentage = y / rect.height;
+
+    if (percentage < 0.25) {
+      setDropPosition("before");
+    } else if (percentage > 0.75) {
+      setDropPosition("after");
+    } else if (isContainer) {
+      setDropPosition("inside");
+    } else {
+      setDropPosition("after");
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setDropPosition(null);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const draggedId = e.dataTransfer.getData("text/plain");
+    if (!draggedId || draggedId === nodeId) {
+      setDropPosition(null);
+      return;
+    }
+
+    if (dropPosition === "inside" && isContainer) {
+      reparentNode(draggedId, nodeId);
+    } else {
+      const targetParent = parentId;
+      const siblings = document.nodes[targetParent]?.children ?? [];
+      const currentIndex = siblings.indexOf(nodeId);
+      const newIndex = dropPosition === "before" ? currentIndex : currentIndex + 1;
+      reparentNode(draggedId, targetParent, newIndex);
+    }
+
+    setDropPosition(null);
+  };
+
   return (
     <>
-      <motion.div
-        className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer text-sm ${
+      <div
+        ref={itemRef}
+        className={`relative flex items-center gap-1 px-2 py-1.5 cursor-pointer text-sm select-none transition-opacity ${
           isSelected
             ? "bg-editor-selection-bg text-editor-selection"
             : "hover:bg-muted/50"
-        } ${!isVisible ? "opacity-50" : ""} ${isEditing ? "ring-1 ring-blue-500/50" : ""}`}
+        } ${!isVisible ? "opacity-50" : ""} ${isEditing ? "ring-1 ring-blue-500/50" : ""} ${isDragging ? "opacity-40" : ""}`}
         style={{ paddingLeft: 8 + depth * 12 }}
         onClick={(e) => {
           selectNode(nodeId, { addToSelection: e.shiftKey || e.metaKey || e.ctrlKey });
         }}
         onDoubleClick={handleDoubleClick}
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.02 }}
+        draggable={!isLocked}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
       >
+        {dropPosition === "before" && (
+          <div className="absolute left-0 right-0 top-0 h-0.5 bg-blue-500 z-10" />
+        )}
+        {dropPosition === "inside" && isContainer && (
+          <div className="absolute inset-0 border-2 border-blue-500 bg-blue-500/10 rounded z-10 pointer-events-none" />
+        )}
+        {dropPosition === "after" && (
+          <div className="absolute left-0 right-0 bottom-0 h-0.5 bg-blue-500 z-10" />
+        )}
+
+        <div className="cursor-grab active:cursor-grabbing p-0.5 -ml-1 opacity-40 hover:opacity-100 transition-opacity">
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </div>
+
         {hasChildren ? (
           <button
             onClick={handleToggleExpand}
@@ -105,7 +187,7 @@ function LayerItem({ nodeId, depth = 0, index = 0 }: LayerItemProps) {
         >
           {isVisible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
         </Button>
-      </motion.div>
+      </div>
 
       {hasChildren && isExpanded && (
         <div>
@@ -115,6 +197,7 @@ function LayerItem({ nodeId, depth = 0, index = 0 }: LayerItemProps) {
               nodeId={childId}
               depth={depth + 1}
               index={childIndex}
+              parentId={nodeId}
             />
           ))}
         </div>
@@ -145,7 +228,7 @@ export function LayersPanel() {
           </div>
         ) : (
           reversedIds.map((id, index) => (
-            <LayerItem key={id} nodeId={id} index={index} />
+            <LayerItem key={id} nodeId={id} index={index} parentId={document.rootId} />
           ))
         )}
       </div>

@@ -4,8 +4,10 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Lock } from "lucide-react";
 import type { NodeId, Size, Position } from "@shadcn-mini/editor-core";
+import { isContainerType } from "@shadcn-mini/editor-core";
 import { useEditorContext } from "../context/EditorContext";
 import { useRendererRegistry } from "../context/RegistryContext";
+import { useDropTarget } from "../context/DndProvider";
 import { ResizeHandles } from "./ResizeHandles";
 import type { DraggableData } from "../editor-types";
 
@@ -16,10 +18,12 @@ export interface CanvasNodeProps {
 export function CanvasNode({ nodeId }: CanvasNodeProps) {
   const { document, selectedIds, selectNode, updateNode, moveNode, zoom } = useEditorContext();
   const registry = useRendererRegistry();
+  const dropTargetId = useDropTarget();
   const node = document.nodes[nodeId];
   const [isResizing, setIsResizing] = useState(false);
 
   const isLocked = node?.locked === true;
+  const isDropTarget = dropTargetId === nodeId && isContainerType(node?.type ?? "");
 
   const handleResizeStart = useCallback(() => {
     setIsResizing(true);
@@ -115,6 +119,9 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
         <div className="absolute -top-2 -right-2 bg-muted rounded-full p-0.5 shadow-sm border border-border">
           <Lock className="h-3 w-3 text-muted-foreground" />
         </div>
+      )}
+      {isDropTarget && (
+        <div className="absolute inset-0 border-2 border-dashed border-blue-500 bg-blue-500/10 pointer-events-none rounded-md z-50" />
       )}
       {Renderer ? (
         <Renderer node={node} isSelected={isSelected} />

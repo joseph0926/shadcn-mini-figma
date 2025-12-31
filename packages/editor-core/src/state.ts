@@ -80,6 +80,23 @@ function applyAdd(
   return { ...state, nodes };
 }
 
+function getAbsolutePosition(
+  nodes: Record<NodeId, NodeBase>,
+  nodeId: NodeId
+): Position {
+  const node = nodes[nodeId];
+  if (!node) return { x: 0, y: 0 };
+
+  const parentId = findParentId(nodes, nodeId);
+  if (!parentId) return node.position;
+
+  const parentPos = getAbsolutePosition(nodes, parentId);
+  return {
+    x: parentPos.x + node.position.x,
+    y: parentPos.y + node.position.y,
+  };
+}
+
 function applyMove(
   state: DocumentState,
   id: NodeId,
@@ -103,6 +120,20 @@ function applyMove(
   if (parentId || index !== undefined) {
     const currentParentId = findParentId(nodes, id);
     const targetParentId = resolveParentId(nodes, state.rootId, parentId ?? currentParentId);
+
+    const isReparenting = parentId !== undefined && currentParentId !== targetParentId;
+
+    if (isReparenting && !position && !delta) {
+      const absPos = getAbsolutePosition(state.nodes, id);
+      const newParentAbsPos = getAbsolutePosition(state.nodes, targetParentId);
+      nodes[id] = {
+        ...nodes[id],
+        position: {
+          x: absPos.x - newParentAbsPos.x,
+          y: absPos.y - newParentAbsPos.y,
+        },
+      };
+    }
 
     if (currentParentId && nodes[currentParentId]) {
       const currentParent = nodes[currentParentId];
