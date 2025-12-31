@@ -45,12 +45,11 @@ function PaletteItemDraggable({ item }: PaletteItemDraggableProps) {
         border border-border rounded-lg
         cursor-grab select-none
         bg-background
+        hover:bg-accent
+        transition-colors
         ${isDragging ? "opacity-50 cursor-grabbing" : ""}
       `}
-      whileHover={{
-        scale: 1.02,
-        backgroundColor: "hsl(var(--accent))",
-      }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
     >

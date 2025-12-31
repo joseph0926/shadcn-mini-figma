@@ -69,6 +69,7 @@ export function DndProvider({ children }: DndProviderProps) {
 
   return (
     <DndContext
+      id="editor-dnd"
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}

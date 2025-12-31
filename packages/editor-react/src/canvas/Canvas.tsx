@@ -35,20 +35,16 @@ export function Canvas({ className }: CanvasProps) {
   };
 
   return (
-    <motion.div
+    <div
       ref={setRefs}
       data-canvas
-      className={className}
+      className={`${className ?? ""} ${isOver ? "bg-editor-selection-bg" : ""} transition-colors`}
       style={{
         position: "relative",
         width: "100%",
         height: "100%",
         overflow: "hidden",
       }}
-      animate={{
-        backgroundColor: isOver ? "hsl(var(--editor-selection-bg))" : "transparent",
-      }}
-      transition={{ duration: 0.15 }}
       onClick={handleCanvasClick}
     >
       <AnimatePresence>
@@ -75,6 +71,6 @@ export function Canvas({ className }: CanvasProps) {
           <CanvasNode key={id} nodeId={id} />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditorContext, COMPONENT_SCHEMAS, type PropSchema } from "@shadcn-mini/editor-react";
+import { useEditorContext, COMPONENT_SCHEMAS, DEFAULT_VALUE, type PropSchema } from "@shadcn-mini/editor-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -128,8 +128,8 @@ export function PropertiesPanel() {
                       {prop.type === "select" && prop.options ? (
                         <Select
                           key={`${selectedId}-${prop.key}`}
-                          value={currentValue}
-                          onValueChange={(value) => handlePropChange(prop.key, value)}
+                          value={currentValue === "" ? DEFAULT_VALUE : currentValue}
+                          onValueChange={(value) => handlePropChange(prop.key, value === DEFAULT_VALUE ? "" : value)}
                         >
                           <SelectTrigger className="h-8 text-sm w-full">
                             <SelectValue />

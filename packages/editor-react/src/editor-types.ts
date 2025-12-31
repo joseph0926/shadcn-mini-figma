@@ -69,8 +69,10 @@ export interface PropSchema {
   defaultValue?: unknown;
 }
 
+export const DEFAULT_VALUE = "__default__";
+
 export const TAILWIND_COLORS: PropSchemaOption[] = [
-  { value: "", label: "Default" },
+  { value: DEFAULT_VALUE, label: "Default" },
   { value: "gray-100", label: "Gray 100" },
   { value: "gray-300", label: "Gray 300" },
   { value: "gray-500", label: "Gray 500" },
@@ -100,8 +102,8 @@ export const COLOR_PROPS_SCHEMA: PropSchema[] = [
     label: "Text Color",
     type: "select",
     options: [
-      { value: "", label: "Default" },
-      ...TAILWIND_COLORS.filter(c => c.value).map(c => ({
+      { value: DEFAULT_VALUE, label: "Default" },
+      ...TAILWIND_COLORS.filter(c => c.value !== DEFAULT_VALUE).map(c => ({
         value: `text-${c.value}`,
         label: c.label,
       })),
@@ -113,8 +115,8 @@ export const COLOR_PROPS_SCHEMA: PropSchema[] = [
     label: "Background",
     type: "select",
     options: [
-      { value: "", label: "Default" },
-      ...TAILWIND_COLORS.filter(c => c.value).map(c => ({
+      { value: DEFAULT_VALUE, label: "Default" },
+      ...TAILWIND_COLORS.filter(c => c.value !== DEFAULT_VALUE).map(c => ({
         value: `bg-${c.value}`,
         label: c.label,
       })),
@@ -126,8 +128,8 @@ export const COLOR_PROPS_SCHEMA: PropSchema[] = [
     label: "Border",
     type: "select",
     options: [
-      { value: "", label: "Default" },
-      ...TAILWIND_COLORS.filter(c => c.value).map(c => ({
+      { value: DEFAULT_VALUE, label: "Default" },
+      ...TAILWIND_COLORS.filter(c => c.value !== DEFAULT_VALUE).map(c => ({
         value: `border-${c.value}`,
         label: c.label,
       })),

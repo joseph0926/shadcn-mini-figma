@@ -12,7 +12,7 @@ export type {
   PropSchema,
   PropSchemaOption,
 } from "./editor-types";
-export { DEFAULT_SIZES, DEFAULT_PROPS, COMPONENT_SCHEMAS } from "./editor-types";
+export { DEFAULT_SIZES, DEFAULT_PROPS, COMPONENT_SCHEMAS, DEFAULT_VALUE } from "./editor-types";
 
 export { useEditor } from "./hooks/useEditor";
 export type { UseEditorReturn } from "./hooks/useEditor";

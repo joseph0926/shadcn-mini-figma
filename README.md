@@ -18,7 +18,6 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Dark/Light mode toggle
 - Export canvas as PNG image
 - Save/Load designs as JSON files
-- Smooth animations powered by Motion
 
 ## Getting Started
 
@@ -59,27 +58,7 @@ packages/editor-react    # React renderer with dnd-kit and motion
 | Ctrl+Z (Cmd+Z) | Undo |
 | Ctrl+Shift+Z (Cmd+Shift+Z) | Redo |
 
-## Current Scope
-
-**Implemented**
-
-- Add components from palette to canvas (Button, Card, Input)
-- Select and move components
-- Multi-selection (Shift/Cmd/Ctrl+Click)
-- Alignment and distribution tools
-- Layers panel with visibility toggle (Eye button)
-- Resize via 8-direction drag handles
-- Edit position, size, and props in Properties Panel
-- Configure component variants via Select dropdowns
-- Color customization (text, background, border colors)
-- Delete and duplicate nodes (single and multi)
-- Undo/Redo
-- Canvas zoom in/out with percentage display
-- Dark/Light mode toggle
-- PNG image export
-- JSON save/load
-
-**Planned**
+## Planned
 
 - Additional component types (Text, Container, Image, etc.)
 - Snap-to-grid and guidelines during drag
