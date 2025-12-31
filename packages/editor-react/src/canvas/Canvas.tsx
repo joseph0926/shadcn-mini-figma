@@ -5,6 +5,7 @@ import { useEditorContext } from "../context/EditorContext";
 import { useDndCanvasRef } from "../context/DndProvider";
 import { useEditorKeyboard } from "../hooks/useEditorKeyboard";
 import { CanvasNode } from "./CanvasNode";
+import { GroupNode } from "./GroupNode";
 
 export interface CanvasProps {
   className?: string;
@@ -67,9 +68,13 @@ export function Canvas({ className }: CanvasProps) {
           height: "100%",
         }}
       >
-        {childIds.map((id) => (
-          <CanvasNode key={id} nodeId={id} />
-        ))}
+        {childIds.map((id) => {
+          const node = document.nodes[id];
+          if (node?.type === "Group") {
+            return <GroupNode key={id} nodeId={id} />;
+          }
+          return <CanvasNode key={id} nodeId={id} />;
+        })}
       </div>
     </div>
   );

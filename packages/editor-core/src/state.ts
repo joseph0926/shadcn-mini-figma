@@ -52,6 +52,10 @@ export function applyCommand(
       return applyDelete(state, command.id);
     case "duplicate":
       return applyDuplicate(state, command.id, command.newId, command.position);
+    case "group":
+      return applyGroup(state, command.nodeIds, command.groupId);
+    case "ungroup":
+      return applyUngroup(state, command.groupId);
     default:
       return state;
   }
@@ -244,4 +248,95 @@ function collectIds(
   for (const childId of node.children) {
     collectIds(nodes, childId, bucket);
   }
+}
+
+function calculateBoundingBox(
+  nodes: Record<NodeId, NodeBase>,
+  nodeIds: NodeId[]
+): { x: number; y: number; width: number; height: number } {
+  const validNodes = nodeIds
+    .map((id) => nodes[id])
+    .filter(Boolean) as NodeBase[];
+
+  if (validNodes.length === 0) {
+    return { x: 0, y: 0, width: 100, height: 100 };
+  }
+
+  const minX = Math.min(...validNodes.map((n) => n.position.x));
+  const minY = Math.min(...validNodes.map((n) => n.position.y));
+  const maxX = Math.max(...validNodes.map((n) => n.position.x + n.size.width));
+  const maxY = Math.max(...validNodes.map((n) => n.position.y + n.size.height));
+
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
+}
+
+function applyGroup(
+  state: DocumentState,
+  nodeIds: NodeId[],
+  groupId: NodeId
+): DocumentState {
+  if (nodeIds.length < 2) return state;
+  if (state.nodes[groupId]) return state;
+
+  const validNodeIds = nodeIds.filter((id) => state.nodes[id] && id !== state.rootId);
+  if (validNodeIds.length < 2) return state;
+
+  const bounds = calculateBoundingBox(state.nodes, validNodeIds);
+
+  const groupNode: NodeBase = {
+    id: groupId,
+    type: "Group",
+    position: { x: bounds.x, y: bounds.y },
+    size: { width: bounds.width, height: bounds.height },
+    props: {},
+    children: validNodeIds,
+  };
+
+  const nodes: Record<NodeId, NodeBase> = { ...state.nodes, [groupId]: groupNode };
+
+  for (const nodeId of validNodeIds) {
+    const parentId = findParentId(nodes, nodeId);
+    if (parentId && nodes[parentId]) {
+      const parent = nodes[parentId];
+      const filtered = (parent.children ?? []).filter((cid) => cid !== nodeId);
+      nodes[parentId] = { ...parent, children: filtered };
+    }
+  }
+
+  const root = nodes[state.rootId];
+  nodes[state.rootId] = {
+    ...root,
+    children: [...(root.children ?? []), groupId],
+  };
+
+  return { ...state, nodes };
+}
+
+function applyUngroup(state: DocumentState, groupId: NodeId): DocumentState {
+  const group = state.nodes[groupId];
+  if (!group || group.type !== "Group") return state;
+
+  const children = group.children ?? [];
+  const parentId = findParentId(state.nodes, groupId) ?? state.rootId;
+
+  const nodes: Record<NodeId, NodeBase> = { ...state.nodes };
+
+  delete nodes[groupId];
+
+  const parent = nodes[parentId];
+  const groupIndex = (parent.children ?? []).indexOf(groupId);
+  const newChildren = (parent.children ?? []).filter((cid) => cid !== groupId);
+
+  for (let i = 0; i < children.length; i++) {
+    newChildren.splice(groupIndex + i, 0, children[i]);
+  }
+
+  nodes[parentId] = { ...parent, children: newChildren };
+
+  return { ...state, nodes };
 }

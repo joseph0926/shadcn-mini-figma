@@ -54,6 +54,11 @@ export interface UseEditorReturn {
   cutSelectedNodes: () => void;
   saveDocument: () => string;
   loadDocument: (json: string) => void;
+  groupSelectedNodes: () => NodeId | null;
+  ungroupSelectedNodes: () => void;
+  editingGroupId: NodeId | null;
+  enterGroup: (groupId: NodeId) => void;
+  exitGroup: () => void;
 }
 
 export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
@@ -64,6 +69,7 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
   const [gridEnabled, setGridEnabled] = useState(false);
   const [gridSize, setGridSize] = useState(16);
   const [clipboard, setClipboard] = useState<NodeBase[]>([]);
+  const [editingGroupId, setEditingGroupId] = useState<NodeId | null>(null);
 
   const selectedId = useMemo(() => {
     const arr = Array.from(selectedIdsState);
@@ -157,17 +163,31 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     [dispatch]
   );
 
+  const moveNodeWithChildren = useCallback(
+    (id: NodeId, delta: Position) => {
+      dispatch({ type: "move", id, delta });
+      const node = document.nodes[id];
+      if (node?.children) {
+        for (const childId of node.children) {
+          moveNodeWithChildren(childId, delta);
+        }
+      }
+    },
+    [dispatch, document.nodes]
+  );
+
   const moveSelectedNodes = useCallback(
     (delta: Position) => {
       for (const id of selectedIdsState) {
-        dispatch({
-          type: "move",
-          id,
-          delta,
-        });
+        const node = document.nodes[id];
+        if (node?.type === "Group" && node.children) {
+          moveNodeWithChildren(id, delta);
+        } else {
+          dispatch({ type: "move", id, delta });
+        }
       }
     },
-    [dispatch, selectedIdsState]
+    [dispatch, selectedIdsState, document.nodes, moveNodeWithChildren]
   );
 
   const updateNode = useCallback(
@@ -360,6 +380,43 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     [reset]
   );
 
+  const groupSelectedNodes = useCallback((): NodeId | null => {
+    if (selectedIdsState.size < 2) return null;
+    const groupId = nanoid();
+    dispatch({
+      type: "group",
+      nodeIds: Array.from(selectedIdsState),
+      groupId,
+    });
+    setSelectedIdsState(new Set([groupId]));
+    return groupId;
+  }, [dispatch, selectedIdsState]);
+
+  const ungroupSelectedNodes = useCallback(() => {
+    const ungroupedChildren: NodeId[] = [];
+    for (const id of selectedIdsState) {
+      const node = document.nodes[id];
+      if (node?.type === "Group" && node.children) {
+        ungroupedChildren.push(...node.children);
+        dispatch({ type: "ungroup", groupId: id });
+      }
+    }
+    setSelectedIdsState(new Set(ungroupedChildren));
+  }, [dispatch, selectedIdsState, document.nodes]);
+
+  const enterGroup = useCallback((groupId: NodeId) => {
+    const node = document.nodes[groupId];
+    if (node?.type === "Group") {
+      setEditingGroupId(groupId);
+      setSelectedIdsState(new Set());
+    }
+  }, [document.nodes]);
+
+  const exitGroup = useCallback(() => {
+    setEditingGroupId(null);
+    setSelectedIdsState(new Set());
+  }, []);
+
   return {
     document,
     selectedId,
@@ -399,5 +456,10 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     cutSelectedNodes,
     saveDocument,
     loadDocument,
+    groupSelectedNodes,
+    ungroupSelectedNodes,
+    editingGroupId,
+    enterGroup,
+    exitGroup,
   };
 }

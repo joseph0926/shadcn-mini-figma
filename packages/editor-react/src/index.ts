@@ -37,6 +37,9 @@ export type { CanvasProps } from "./canvas/Canvas";
 export { CanvasNode } from "./canvas/CanvasNode";
 export type { CanvasNodeProps } from "./canvas/CanvasNode";
 
+export { GroupNode } from "./canvas/GroupNode";
+export type { GroupNodeProps } from "./canvas/GroupNode";
+
 export { DragPreview } from "./canvas/DragPreview";
 export type { DragPreviewProps } from "./canvas/DragPreview";
 

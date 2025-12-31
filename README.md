@@ -8,11 +8,12 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Components: Button, Card, Input, Text, Badge, Avatar, Separator
 - Select, move, and resize components via 8-direction handles
 - Multi-selection with Shift/Cmd/Ctrl+Click
+- Group/Ungroup nodes with proportional scaling on resize
 - Copy/Paste/Cut with keyboard shortcuts
 - Node locking (prevent move/resize/delete)
 - Snap-to-grid with configurable grid size (8/16/32px)
 - Alignment tools (left, center, right, top, middle, bottom)
-- Layers panel with visibility and lock toggles
+- Layers panel with tree structure, visibility and lock toggles
 - Collapsible left/right panels
 - Edit position, size, and props in Properties Panel
 - Configure component variants (Button: variant/size, Card: title/description, Input: placeholder)
@@ -62,14 +63,15 @@ packages/editor-react    # React renderer with dnd-kit and motion
 | Ctrl+V (Cmd+V)             | Paste copied node(s)       |
 | Ctrl+X (Cmd+X)             | Cut selected node(s)       |
 | Ctrl+D (Cmd+D)             | Duplicate selected node(s) |
+| Ctrl+G (Cmd+G)             | Group selected nodes       |
+| Ctrl+Shift+G (Cmd+Shift+G) | Ungroup selected group     |
 | Ctrl+A (Cmd+A)             | Select all nodes           |
-| Escape                     | Clear selection            |
+| Escape                     | Exit group / Clear selection |
 | Ctrl+Z (Cmd+Z)             | Undo                       |
 | Ctrl+Shift+Z (Cmd+Shift+Z) | Redo                       |
 
 ## Planned
 
-- Grouping nodes
 - Local storage auto-save
 - Templates
 

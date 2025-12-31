@@ -1,6 +1,6 @@
 import type { NodeBase, NodeId, Position } from "./types";
 
-export type CommandType = "add" | "move" | "update" | "delete" | "duplicate";
+export type CommandType = "add" | "move" | "update" | "delete" | "duplicate" | "group" | "ungroup";
 
 export interface AddNodeCommand {
   type: "add";
@@ -36,9 +36,22 @@ export interface DuplicateNodeCommand {
   position?: Position;
 }
 
+export interface GroupNodeCommand {
+  type: "group";
+  nodeIds: NodeId[];
+  groupId: NodeId;
+}
+
+export interface UngroupNodeCommand {
+  type: "ungroup";
+  groupId: NodeId;
+}
+
 export type Command =
   | AddNodeCommand
   | MoveNodeCommand
   | UpdateNodeCommand
   | DeleteNodeCommand
-  | DuplicateNodeCommand;
+  | DuplicateNodeCommand
+  | GroupNodeCommand
+  | UngroupNodeCommand;

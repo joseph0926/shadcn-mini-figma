@@ -13,6 +13,10 @@ export function useEditorKeyboard() {
     copySelectedNodes,
     pasteNodes,
     cutSelectedNodes,
+    groupSelectedNodes,
+    ungroupSelectedNodes,
+    editingGroupId,
+    exitGroup,
   } = useEditorContext();
 
   useEffect(() => {
@@ -58,7 +62,23 @@ export function useEditorKeyboard() {
 
       if (e.key === "Escape") {
         e.preventDefault();
-        clearSelection();
+        if (editingGroupId) {
+          exitGroup();
+        } else {
+          clearSelection();
+        }
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === "g" && !e.shiftKey) {
+        e.preventDefault();
+        groupSelectedNodes();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "G") {
+        e.preventDefault();
+        ungroupSelectedNodes();
         return;
       }
 
@@ -77,5 +97,5 @@ export function useEditorKeyboard() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo, copySelectedNodes, pasteNodes, cutSelectedNodes]);
+  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo, copySelectedNodes, pasteNodes, cutSelectedNodes, groupSelectedNodes, ungroupSelectedNodes, editingGroupId, exitGroup]);
 }
