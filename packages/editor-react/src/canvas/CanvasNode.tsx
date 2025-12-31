@@ -33,7 +33,7 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
       data: { type: "canvas-node", nodeId } satisfies DraggableData,
     });
 
-  if (!node) return null;
+  if (!node || node.visible === false) return null;
 
   const isSelected = selectedIds.has(nodeId);
   const Renderer = registry[node.type];

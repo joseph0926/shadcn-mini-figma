@@ -33,6 +33,7 @@ export interface UseEditorReturn {
   duplicateSelectedNodes: () => NodeId[];
   alignSelection: (type: AlignmentType) => void;
   distributeSelection: (type: DistributionType) => void;
+  toggleVisibility: (id: NodeId) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -256,6 +257,19 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     [dispatch, selectedIdsState, document.nodes]
   );
 
+  const toggleVisibility = useCallback(
+    (id: NodeId) => {
+      const node = document.nodes[id];
+      if (!node) return;
+      dispatch({
+        type: "update",
+        id,
+        patch: { visible: node.visible === false },
+      });
+    },
+    [dispatch, document.nodes]
+  );
+
   const saveDocument = useCallback(() => {
     return serializeDocument(document);
   }, [document]);
@@ -287,6 +301,7 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     duplicateSelectedNodes,
     alignSelection,
     distributeSelection,
+    toggleVisibility,
     undo,
     redo,
     canUndo,

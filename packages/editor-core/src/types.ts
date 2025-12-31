@@ -17,6 +17,7 @@ export interface NodeBase {
   size: Size;
   props: Record<string, unknown>;
   children?: NodeId[];
+  visible?: boolean;
 }
 
 export interface DocumentState {

@@ -8,7 +8,7 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Select, move, and resize components via 8-direction handles
 - Multi-selection with Shift/Cmd/Ctrl+Click
 - Alignment tools (left, center, right, top, middle, bottom)
-- Layers panel for node management
+- Layers panel with visibility toggle
 - Edit position, size, and props in Properties Panel
 - Configure component variants (Button: variant/size, Card: title/description, Input: placeholder)
 - Undo/Redo with keyboard shortcuts
@@ -66,7 +66,7 @@ packages/editor-react    # React renderer with dnd-kit and motion
 - Select and move components
 - Multi-selection (Shift/Cmd/Ctrl+Click)
 - Alignment and distribution tools
-- Layers panel with selection sync
+- Layers panel with visibility toggle (Eye button)
 - Resize via 8-direction drag handles
 - Edit position, size, and props in Properties Panel
 - Configure component variants via Select dropdowns

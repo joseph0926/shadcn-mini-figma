@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Eye, EyeOff, Lock, Unlock, ChevronRight } from "lucide-react";
+import { Eye, EyeOff, ChevronRight } from "lucide-react";
 import { useEditorContext } from "@shadcn-mini/editor-react";
 import { Button } from "@/components/ui/button";
 
 export function LayersPanel() {
-  const { document, selectedIds, selectNode } = useEditorContext();
+  const { document, selectedIds, selectNode, toggleVisibility } = useEditorContext();
 
   const rootNode = document.nodes[document.rootId];
   const childIds = rootNode?.children ?? [];
@@ -31,6 +31,8 @@ export function LayersPanel() {
             if (!node) return null;
             const isSelected = selectedIds.has(id);
 
+            const isVisible = node.visible !== false;
+
             return (
               <motion.div
                 key={id}
@@ -38,7 +40,7 @@ export function LayersPanel() {
                   isSelected
                     ? "bg-editor-selection-bg text-editor-selection"
                     : "hover:bg-muted/50"
-                }`}
+                } ${!isVisible ? "opacity-50" : ""}`}
                 onClick={(e) => {
                   selectNode(id, { addToSelection: e.shiftKey || e.metaKey || e.ctrlKey });
                 }}
@@ -51,10 +53,13 @@ export function LayersPanel() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-5 w-5 opacity-0 hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
+                  className="h-5 w-5 opacity-50 hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleVisibility(id);
+                  }}
                 >
-                  <Eye className="h-3 w-3" />
+                  {isVisible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                 </Button>
               </motion.div>
             );
