@@ -13,16 +13,48 @@ const HANDLE_SIZE = 8;
 
 const handlePositions: Record<HandlePosition, React.CSSProperties> = {
   nw: { top: -HANDLE_SIZE / 2, left: -HANDLE_SIZE / 2, cursor: "nwse-resize" },
-  n: { top: -HANDLE_SIZE / 2, left: "50%", marginLeft: -HANDLE_SIZE / 2, cursor: "ns-resize" },
+  n: {
+    top: -HANDLE_SIZE / 2,
+    left: "50%",
+    marginLeft: -HANDLE_SIZE / 2,
+    cursor: "ns-resize",
+  },
   ne: { top: -HANDLE_SIZE / 2, right: -HANDLE_SIZE / 2, cursor: "nesw-resize" },
-  e: { top: "50%", right: -HANDLE_SIZE / 2, marginTop: -HANDLE_SIZE / 2, cursor: "ew-resize" },
-  se: { bottom: -HANDLE_SIZE / 2, right: -HANDLE_SIZE / 2, cursor: "nwse-resize" },
-  s: { bottom: -HANDLE_SIZE / 2, left: "50%", marginLeft: -HANDLE_SIZE / 2, cursor: "ns-resize" },
-  sw: { bottom: -HANDLE_SIZE / 2, left: -HANDLE_SIZE / 2, cursor: "nesw-resize" },
-  w: { top: "50%", left: -HANDLE_SIZE / 2, marginTop: -HANDLE_SIZE / 2, cursor: "ew-resize" },
+  e: {
+    top: "50%",
+    right: -HANDLE_SIZE / 2,
+    marginTop: -HANDLE_SIZE / 2,
+    cursor: "ew-resize",
+  },
+  se: {
+    bottom: -HANDLE_SIZE / 2,
+    right: -HANDLE_SIZE / 2,
+    cursor: "nwse-resize",
+  },
+  s: {
+    bottom: -HANDLE_SIZE / 2,
+    left: "50%",
+    marginLeft: -HANDLE_SIZE / 2,
+    cursor: "ns-resize",
+  },
+  sw: {
+    bottom: -HANDLE_SIZE / 2,
+    left: -HANDLE_SIZE / 2,
+    cursor: "nesw-resize",
+  },
+  w: {
+    top: "50%",
+    left: -HANDLE_SIZE / 2,
+    marginTop: -HANDLE_SIZE / 2,
+    cursor: "ew-resize",
+  },
 };
 
-export function ResizeHandles({ size, zoom = 1, onResize }: ResizeHandlesProps) {
+export function ResizeHandles({
+  size,
+  zoom = 1,
+  onResize,
+}: ResizeHandlesProps) {
   const handleMouseDown = useCallback(
     (handle: HandlePosition) => (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -34,8 +66,10 @@ export function ResizeHandles({ size, zoom = 1, onResize }: ResizeHandlesProps) 
       const startHeight = size.height;
 
       const handleMouseMove = (moveE: MouseEvent) => {
-        const dx = (moveE.clientX - startX) / zoom;
-        const dy = (moveE.clientY - startY) / zoom;
+        const rawDx = moveE.clientX - startX;
+        const rawDy = moveE.clientY - startY;
+        const dx = rawDx / zoom;
+        const dy = rawDy / zoom;
 
         let newWidth = startWidth;
         let newHeight = startHeight;
@@ -45,21 +79,21 @@ export function ResizeHandles({ size, zoom = 1, onResize }: ResizeHandlesProps) 
         if (handle.includes("e")) newWidth = startWidth + dx;
         if (handle.includes("w")) {
           newWidth = startWidth - dx;
-          posX = dx;
+          posX = rawDx;
         }
         if (handle.includes("s")) newHeight = startHeight + dy;
         if (handle.includes("n")) {
           newHeight = startHeight - dy;
-          posY = dy;
+          posY = rawDy;
         }
 
         const minSize = 20;
         if (newWidth < minSize) {
-          if (handle.includes("w")) posX -= minSize - newWidth;
+          if (handle.includes("w")) posX -= (minSize - newWidth) * zoom;
           newWidth = minSize;
         }
         if (newHeight < minSize) {
-          if (handle.includes("n")) posY -= minSize - newHeight;
+          if (handle.includes("n")) posY -= (minSize - newHeight) * zoom;
           newHeight = minSize;
         }
 
