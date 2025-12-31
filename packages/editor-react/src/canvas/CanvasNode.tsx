@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -17,8 +17,17 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
   const { document, selectedIds, selectNode, updateNode, moveNode, zoom } = useEditorContext();
   const registry = useRendererRegistry();
   const node = document.nodes[nodeId];
+  const [isResizing, setIsResizing] = useState(false);
 
   const isLocked = node?.locked === true;
+
+  const handleResizeStart = useCallback(() => {
+    setIsResizing(true);
+  }, []);
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false);
+  }, []);
 
   const handleResize = useCallback(
     (newSize: Size, positionDelta: Position) => {
@@ -35,7 +44,7 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
     useDraggable({
       id: nodeId,
       data: { type: "canvas-node", nodeId } satisfies DraggableData,
-      disabled: isLocked,
+      disabled: isLocked || isResizing,
     });
 
   if (!node || node.visible === false) return null;
@@ -57,7 +66,7 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
         top: node.position.y,
         width: node.size.width,
         height: node.size.height,
-        transform: CSS.Translate.toString(transform),
+        transform: isResizing ? undefined : CSS.Translate.toString(transform),
       }}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{
@@ -91,7 +100,15 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
             }}
             layoutId={`selection-${nodeId}`}
           />
-          {!isLocked && <ResizeHandles size={node.size} zoom={zoom} onResize={handleResize} />}
+          {!isLocked && (
+            <ResizeHandles
+              size={node.size}
+              zoom={zoom}
+              onResize={handleResize}
+              onResizeStart={handleResizeStart}
+              onResizeEnd={handleResizeEnd}
+            />
+          )}
         </>
       )}
       {isLocked && (

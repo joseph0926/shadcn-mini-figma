@@ -5,6 +5,8 @@ export interface ResizeHandlesProps {
   size: Size;
   zoom?: number;
   onResize: (newSize: Size, positionDelta: Position) => void;
+  onResizeStart?: () => void;
+  onResizeEnd?: () => void;
 }
 
 type HandlePosition = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
@@ -54,11 +56,15 @@ export function ResizeHandles({
   size,
   zoom = 1,
   onResize,
+  onResizeStart,
+  onResizeEnd,
 }: ResizeHandlesProps) {
   const handleMouseDown = useCallback(
     (handle: HandlePosition) => (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
+
+      onResizeStart?.();
 
       const startX = e.clientX;
       const startY = e.clientY;
@@ -66,10 +72,8 @@ export function ResizeHandles({
       const startHeight = size.height;
 
       const handleMouseMove = (moveE: MouseEvent) => {
-        const rawDx = moveE.clientX - startX;
-        const rawDy = moveE.clientY - startY;
-        const dx = rawDx / zoom;
-        const dy = rawDy / zoom;
+        const dx = (moveE.clientX - startX) / zoom;
+        const dy = (moveE.clientY - startY) / zoom;
 
         let newWidth = startWidth;
         let newHeight = startHeight;
@@ -79,21 +83,21 @@ export function ResizeHandles({
         if (handle.includes("e")) newWidth = startWidth + dx;
         if (handle.includes("w")) {
           newWidth = startWidth - dx;
-          posX = rawDx;
+          posX = dx;
         }
         if (handle.includes("s")) newHeight = startHeight + dy;
         if (handle.includes("n")) {
           newHeight = startHeight - dy;
-          posY = rawDy;
+          posY = dy;
         }
 
         const minSize = 20;
         if (newWidth < minSize) {
-          if (handle.includes("w")) posX -= (minSize - newWidth) * zoom;
+          if (handle.includes("w")) posX -= minSize - newWidth;
           newWidth = minSize;
         }
         if (newHeight < minSize) {
-          if (handle.includes("n")) posY -= (minSize - newHeight) * zoom;
+          if (handle.includes("n")) posY -= minSize - newHeight;
           newHeight = minSize;
         }
 
@@ -103,12 +107,13 @@ export function ResizeHandles({
       const handleMouseUp = () => {
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
+        onResizeEnd?.();
       };
 
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     },
-    [size, zoom, onResize]
+    [size, zoom, onResize, onResizeStart, onResizeEnd]
   );
 
   return (
