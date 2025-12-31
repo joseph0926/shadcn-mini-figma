@@ -48,12 +48,20 @@ export const DEFAULT_SIZES: Record<string, { width: number; height: number }> = 
   Button: { width: 100, height: 40 },
   Card: { width: 300, height: 200 },
   Input: { width: 200, height: 40 },
+  Text: { width: 120, height: 32 },
+  Badge: { width: 80, height: 32 },
+  Avatar: { width: 48, height: 48 },
+  Separator: { width: 200, height: 4 },
 };
 
 export const DEFAULT_PROPS: Record<string, Record<string, unknown>> = {
   Button: { label: "Button", variant: "default", size: "default" },
   Card: { title: "Card Title", description: "Card description" },
   Input: { placeholder: "Enter text..." },
+  Text: { content: "Text", fontSize: "base", fontWeight: "normal", textAlign: "left" },
+  Badge: { content: "Badge", variant: "default" },
+  Avatar: { src: "", fallback: "AB" },
+  Separator: { orientation: "horizontal" },
 };
 
 export interface PropSchemaOption {
@@ -176,6 +184,83 @@ export const COMPONENT_SCHEMAS: Record<string, PropSchema[]> = {
   ],
   Input: [
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "Enter text..." },
+    ...COLOR_PROPS_SCHEMA,
+  ],
+  Text: [
+    { key: "content", label: "Content", type: "text", defaultValue: "Text" },
+    {
+      key: "fontSize",
+      label: "Font Size",
+      type: "select",
+      options: [
+        { value: "xs", label: "XS" },
+        { value: "sm", label: "Small" },
+        { value: "base", label: "Base" },
+        { value: "lg", label: "Large" },
+        { value: "xl", label: "XL" },
+        { value: "2xl", label: "2XL" },
+        { value: "3xl", label: "3XL" },
+      ],
+      defaultValue: "base",
+    },
+    {
+      key: "fontWeight",
+      label: "Weight",
+      type: "select",
+      options: [
+        { value: "light", label: "Light" },
+        { value: "normal", label: "Normal" },
+        { value: "medium", label: "Medium" },
+        { value: "semibold", label: "Semibold" },
+        { value: "bold", label: "Bold" },
+      ],
+      defaultValue: "normal",
+    },
+    {
+      key: "textAlign",
+      label: "Align",
+      type: "select",
+      options: [
+        { value: "left", label: "Left" },
+        { value: "center", label: "Center" },
+        { value: "right", label: "Right" },
+      ],
+      defaultValue: "left",
+    },
+    ...COLOR_PROPS_SCHEMA,
+  ],
+  Badge: [
+    { key: "content", label: "Content", type: "text", defaultValue: "Badge" },
+    {
+      key: "variant",
+      label: "Variant",
+      type: "select",
+      options: [
+        { value: "default", label: "Default" },
+        { value: "secondary", label: "Secondary" },
+        { value: "destructive", label: "Destructive" },
+        { value: "outline", label: "Outline" },
+      ],
+      defaultValue: "default",
+    },
+    ...COLOR_PROPS_SCHEMA,
+  ],
+  Avatar: [
+    { key: "src", label: "Image URL", type: "text", defaultValue: "" },
+    { key: "fallback", label: "Fallback", type: "text", defaultValue: "AB" },
+    ...COLOR_PROPS_SCHEMA,
+  ],
+  Separator: [
+    {
+      key: "orientation",
+      label: "Orientation",
+      type: "select",
+      options: [
+        { value: "horizontal", label: "Horizontal" },
+        { value: "vertical", label: "Vertical" },
+      ],
+      defaultValue: "horizontal",
+    },
     ...COLOR_PROPS_SCHEMA,
   ],
 };

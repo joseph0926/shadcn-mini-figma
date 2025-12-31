@@ -34,6 +34,7 @@ export interface UseEditorReturn {
   alignSelection: (type: AlignmentType) => void;
   distributeSelection: (type: DistributionType) => void;
   toggleVisibility: (id: NodeId) => void;
+  toggleLock: (id: NodeId) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -42,6 +43,15 @@ export interface UseEditorReturn {
   setZoom: (zoom: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  gridEnabled: boolean;
+  setGridEnabled: (enabled: boolean) => void;
+  gridSize: number;
+  setGridSize: (size: number) => void;
+  snapToGrid: (position: Position) => Position;
+  clipboard: NodeBase[];
+  copySelectedNodes: () => void;
+  pasteNodes: () => NodeId[];
+  cutSelectedNodes: () => void;
   saveDocument: () => string;
   loadDocument: (json: string) => void;
 }
@@ -51,6 +61,9 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     useEditorHistory(initialDocument);
   const [selectedIdsState, setSelectedIdsState] = useState<Set<NodeId>>(new Set());
   const [zoom, setZoomState] = useState(1);
+  const [gridEnabled, setGridEnabled] = useState(false);
+  const [gridSize, setGridSize] = useState(16);
+  const [clipboard, setClipboard] = useState<NodeBase[]>([]);
 
   const selectedId = useMemo(() => {
     const arr = Array.from(selectedIdsState);
@@ -68,6 +81,17 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
   const zoomOut = useCallback(() => {
     setZoomState((prev) => Math.max(0.25, prev - 0.1));
   }, []);
+
+  const snapToGrid = useCallback(
+    (position: Position): Position => {
+      if (!gridEnabled) return position;
+      return {
+        x: Math.round(position.x / gridSize) * gridSize,
+        y: Math.round(position.y / gridSize) * gridSize,
+      };
+    },
+    [gridEnabled, gridSize]
+  );
 
   const addNode = useCallback(
     (type: string, position: Position): NodeId => {
@@ -270,6 +294,55 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     [dispatch, document.nodes]
   );
 
+  const toggleLock = useCallback(
+    (id: NodeId) => {
+      const node = document.nodes[id];
+      if (!node) return;
+      dispatch({
+        type: "update",
+        id,
+        patch: { locked: !node.locked },
+      });
+    },
+    [dispatch, document.nodes]
+  );
+
+  const copySelectedNodes = useCallback(() => {
+    const nodes = Array.from(selectedIdsState)
+      .map((id) => document.nodes[id])
+      .filter(Boolean) as NodeBase[];
+    if (nodes.length === 0) return;
+    setClipboard(nodes);
+  }, [selectedIdsState, document.nodes]);
+
+  const pasteNodes = useCallback((): NodeId[] => {
+    if (clipboard.length === 0) return [];
+    const newIds: NodeId[] = [];
+    const offset = { x: 20, y: 20 };
+    for (const node of clipboard) {
+      const newId = nanoid();
+      dispatch({
+        type: "add",
+        node: {
+          ...node,
+          id: newId,
+          position: {
+            x: node.position.x + offset.x,
+            y: node.position.y + offset.y,
+          },
+        },
+      });
+      newIds.push(newId);
+    }
+    setSelectedIdsState(new Set(newIds));
+    return newIds;
+  }, [clipboard, dispatch]);
+
+  const cutSelectedNodes = useCallback(() => {
+    copySelectedNodes();
+    deleteSelectedNodes();
+  }, [copySelectedNodes, deleteSelectedNodes]);
+
   const saveDocument = useCallback(() => {
     return serializeDocument(document);
   }, [document]);
@@ -302,6 +375,7 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     alignSelection,
     distributeSelection,
     toggleVisibility,
+    toggleLock,
     undo,
     redo,
     canUndo,
@@ -310,6 +384,15 @@ export function useEditor(initialDocument?: DocumentState): UseEditorReturn {
     setZoom,
     zoomIn,
     zoomOut,
+    gridEnabled,
+    setGridEnabled,
+    gridSize,
+    setGridSize,
+    snapToGrid,
+    clipboard,
+    copySelectedNodes,
+    pasteNodes,
+    cutSelectedNodes,
     saveDocument,
     loadDocument,
   };

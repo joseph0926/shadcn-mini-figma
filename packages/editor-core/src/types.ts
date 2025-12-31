@@ -18,6 +18,7 @@ export interface NodeBase {
   props: Record<string, unknown>;
   children?: NodeId[];
   visible?: boolean;
+  locked?: boolean;
 }
 
 export interface DocumentState {

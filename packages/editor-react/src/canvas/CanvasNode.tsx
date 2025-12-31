@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { motion } from "motion/react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { Lock } from "lucide-react";
 import type { NodeId, Size, Position } from "@shadcn-mini/editor-core";
 import { useEditorContext } from "../context/EditorContext";
 import { useRendererRegistry } from "../context/RegistryContext";
@@ -17,20 +18,24 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
   const registry = useRendererRegistry();
   const node = document.nodes[nodeId];
 
+  const isLocked = node?.locked === true;
+
   const handleResize = useCallback(
     (newSize: Size, positionDelta: Position) => {
+      if (isLocked) return;
       updateNode(nodeId, { size: newSize });
       if (positionDelta.x !== 0 || positionDelta.y !== 0) {
         moveNode(nodeId, positionDelta);
       }
     },
-    [nodeId, updateNode, moveNode]
+    [nodeId, updateNode, moveNode, isLocked]
   );
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: nodeId,
       data: { type: "canvas-node", nodeId } satisfies DraggableData,
+      disabled: isLocked,
     });
 
   if (!node || node.visible === false) return null;
@@ -71,7 +76,7 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
       {...listeners}
       {...attributes}
       data-node-id={nodeId}
-      className={`cursor-grab rounded-md ${isDragging ? "cursor-grabbing" : ""}`}
+      className={`rounded-md ${isLocked ? "cursor-not-allowed" : isDragging ? "cursor-grabbing" : "cursor-grab"}`}
     >
       {isSelected && (
         <>
@@ -86,8 +91,13 @@ export function CanvasNode({ nodeId }: CanvasNodeProps) {
             }}
             layoutId={`selection-${nodeId}`}
           />
-          <ResizeHandles size={node.size} zoom={zoom} onResize={handleResize} />
+          {!isLocked && <ResizeHandles size={node.size} zoom={zoom} onResize={handleResize} />}
         </>
+      )}
+      {isLocked && (
+        <div className="absolute -top-2 -right-2 bg-muted rounded-full p-0.5 shadow-sm border border-border">
+          <Lock className="h-3 w-3 text-muted-foreground" />
+        </div>
       )}
       {Renderer ? <Renderer node={node} isSelected={isSelected} /> : null}
     </motion.div>

@@ -5,10 +5,15 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 ## Features
 
 - Drag components from a palette onto a canvas
+- Components: Button, Card, Input, Text, Badge, Avatar, Separator
 - Select, move, and resize components via 8-direction handles
 - Multi-selection with Shift/Cmd/Ctrl+Click
+- Copy/Paste/Cut with keyboard shortcuts
+- Node locking (prevent move/resize/delete)
+- Snap-to-grid with configurable grid size (8/16/32px)
 - Alignment tools (left, center, right, top, middle, bottom)
-- Layers panel with visibility toggle
+- Layers panel with visibility and lock toggles
+- Collapsible left/right panels
 - Edit position, size, and props in Properties Panel
 - Configure component variants (Button: variant/size, Card: title/description, Input: placeholder)
 - Color customization (text, background, border) with Tailwind color palette
@@ -18,6 +23,7 @@ A web-based visual editor for building UI prototypes using shadcn/ui components.
 - Dark/Light mode toggle
 - Export canvas as PNG image
 - Save/Load designs as JSON files
+- Onboarding tooltips for first-time users
 
 ## Getting Started
 
@@ -52,6 +58,9 @@ packages/editor-react    # React renderer with dnd-kit and motion
 | Shortcut | Action |
 |----------|--------|
 | Delete / Backspace | Delete selected node(s) |
+| Ctrl+C (Cmd+C) | Copy selected node(s) |
+| Ctrl+V (Cmd+V) | Paste copied node(s) |
+| Ctrl+X (Cmd+X) | Cut selected node(s) |
 | Ctrl+D (Cmd+D) | Duplicate selected node(s) |
 | Ctrl+A (Cmd+A) | Select all nodes |
 | Escape | Clear selection |
@@ -60,8 +69,7 @@ packages/editor-react    # React renderer with dnd-kit and motion
 
 ## Planned
 
-- Additional component types (Text, Container, Image, etc.)
-- Snap-to-grid and guidelines during drag
+- Grouping nodes
 - Local storage auto-save
 - Templates
 

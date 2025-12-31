@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Eye, EyeOff, ChevronRight } from "lucide-react";
+import { Eye, EyeOff, ChevronRight, Lock, Unlock } from "lucide-react";
 import { useEditorContext } from "@shadcn-mini/editor-react";
 import { Button } from "@/components/ui/button";
 
 export function LayersPanel() {
-  const { document, selectedIds, selectNode, toggleVisibility } = useEditorContext();
+  const { document, selectedIds, selectNode, toggleVisibility, toggleLock } = useEditorContext();
 
   const rootNode = document.nodes[document.rootId];
   const childIds = rootNode?.children ?? [];
@@ -32,6 +32,7 @@ export function LayersPanel() {
             const isSelected = selectedIds.has(id);
 
             const isVisible = node.visible !== false;
+            const isLocked = node.locked === true;
 
             return (
               <motion.div
@@ -50,6 +51,17 @@ export function LayersPanel() {
               >
                 <ChevronRight className="h-3 w-3 text-muted-foreground" />
                 <span className="flex-1 truncate text-xs">{node.type}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 opacity-50 hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleLock(id);
+                  }}
+                >
+                  {isLocked ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"

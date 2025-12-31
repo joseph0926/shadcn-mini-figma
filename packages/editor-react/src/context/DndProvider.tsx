@@ -18,7 +18,7 @@ export interface DndProviderProps {
 }
 
 export function DndProvider({ children }: DndProviderProps) {
-  const { document, addNode, moveNode, selectedIds, moveSelectedNodes, zoom } = useEditorContext();
+  const { document, addNode, moveNode, selectedIds, moveSelectedNodes, zoom, snapToGrid } = useEditorContext();
   const registry = useRendererRegistry();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeData, setActiveData] = useState<DraggableData | null>(null);
@@ -49,16 +49,24 @@ export function DndProvider({ children }: DndProviderProps) {
       if (!rect) return;
 
       const activatorEvent = event.activatorEvent as PointerEvent;
-      const position = {
+      const rawPosition = {
         x: (activatorEvent.clientX - rect.left + delta.x) / zoom,
         y: (activatorEvent.clientY - rect.top + delta.y) / zoom,
       };
+      const position = snapToGrid(rawPosition);
       addNode(data.nodeType, position);
     } else if (data.type === "canvas-node") {
-      if (selectedIds.has(data.nodeId) && selectedIds.size > 1) {
-        moveSelectedNodes({ x: delta.x / zoom, y: delta.y / zoom });
-      } else {
-        moveNode(data.nodeId, { x: delta.x / zoom, y: delta.y / zoom });
+      const rawDelta = { x: delta.x / zoom, y: delta.y / zoom };
+      const node = document.nodes[data.nodeId];
+      if (node) {
+        const currentPos = node.position;
+        const newPos = snapToGrid({ x: currentPos.x + rawDelta.x, y: currentPos.y + rawDelta.y });
+        const snappedDelta = { x: newPos.x - currentPos.x, y: newPos.y - currentPos.y };
+        if (selectedIds.has(data.nodeId) && selectedIds.size > 1) {
+          moveSelectedNodes(snappedDelta);
+        } else {
+          moveNode(data.nodeId, snappedDelta);
+        }
       }
     }
   };

@@ -27,6 +27,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/utilities": "^3.2.2",
     "@shadcn-mini/editor-core": "workspace:*",
+    "lucide-react": "^0.468.0",
     "motion": "^12.23.26",
     "nanoid": "^5.1.6"
   },

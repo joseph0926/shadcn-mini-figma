@@ -10,6 +10,9 @@ export function useEditorKeyboard() {
     clearSelection,
     undo,
     redo,
+    copySelectedNodes,
+    pasteNodes,
+    cutSelectedNodes,
   } = useEditorContext();
 
   useEffect(() => {
@@ -35,6 +38,24 @@ export function useEditorKeyboard() {
         return;
       }
 
+      if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        e.preventDefault();
+        copySelectedNodes();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+        e.preventDefault();
+        pasteNodes();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === "x") {
+        e.preventDefault();
+        cutSelectedNodes();
+        return;
+      }
+
       if (e.key === "Escape") {
         e.preventDefault();
         clearSelection();
@@ -56,5 +77,5 @@ export function useEditorKeyboard() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo]);
+  }, [selectedIds, deleteSelectedNodes, duplicateSelectedNodes, selectAll, clearSelection, undo, redo, copySelectedNodes, pasteNodes, cutSelectedNodes]);
 }
